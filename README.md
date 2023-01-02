@@ -2,12 +2,10 @@
 Class materials for ECS273 Visual Analytics in Winter 2023.
 
 ## Time and Location
----
 - Lecture Time: 4:40-6:00pm Tuesday and Thursday
 - Location: TBA
 
 ## Instructor and TA Office Hours
----
 -  Instructor: [Kwan-Liu Ma](https://www.cs.ucdavis.edu/~ma/)
 -  Teaching Assistant: Yun-Hsin Kuo
 -  TA Office Hours: Tuesdays 2-4pm (Zoom)
