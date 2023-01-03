@@ -14,11 +14,12 @@ export default {
 }
 </script>
 
+<!--This is using the grid component from Vuetify to do layout design-->
 <template>
   <v-container id="main-container" class="d-flex flex-column flex-nowrap" fluid>
     <v-row no-gutters>
       <v-col cols="5">
-        <ExampleWithInteractions/>
+        <ExampleWithLegend/>
       </v-col>
     </v-row>
     <v-row no-gutters>

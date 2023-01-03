@@ -5,19 +5,22 @@ import { watch } from 'vue';
 export default {
   setup() {
     const store = useExampleStore()
-    watch(store, (state) => {
+    // This is the state read from store
+    // This is showing how the store update from one component will also be reflected in other components
+    watch(store, (state) => { 
       console.log(state.size)
     })
     return {
-      count: 0
+      count: 0 // This is the local state of this component
     }
   },
   props: {
-    msg: String,
+    msg: String, // This is the props passed down from the parent component
   },
 }
 </script>
 
+<!-- The following is showcasing how to use UI components from Vuetify-->
 <template>
   <h3 class="ma-2">{{ msg }}</h3>
 

@@ -13,11 +13,11 @@ def hello_world():
 @app.route("/fetchExample", methods=["GET", "POST"])
 @cross_origin()
 def fetchExample():
-    if request.method == "GET":
+    if request.method == "GET": # handling GET request
         points, cluster_names = processExample()
         resp = jsonify(data=points, clusters=cluster_names)
         return resp
-    else:
+    else: # handling POST request, which is only effective when ExampleWithInteractions.vue is loaded
         request_context = request.get_json() # JSON object
         method = request_context['method']
         points, cluster_names = processExample(method)

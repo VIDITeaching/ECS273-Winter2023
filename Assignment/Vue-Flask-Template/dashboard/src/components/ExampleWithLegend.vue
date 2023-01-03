@@ -9,6 +9,11 @@ interface ScatterPoint extends Point{
     cluster: string;
 }
 
+/* The new major things from Example.vue
+1) initLegend() in this component
+2) the template and the css in this component
+*/
+
 export default {
     data() {
         return {
@@ -82,11 +87,14 @@ export default {
             const rectSize = 12;
             const titleHeight = 20;
 
+            // This is further utilizing data joins in d3.js, you can find the equivalent code in the comments below.
+            // Check out https://observablehq.com/@d3/selection-join
             const legendGroups = legendContainer.append('g')
-                .attr('transform', `translate(0, ${titleHeight})`)
+                .attr('transform', `translate(0, ${titleHeight})`) // this is applied to "g" element and will affect all the child elements.
                 .selectAll('g')
                 .data<string>(clusterLabels)
                 .join((enter) => { // This enter syntax is recommended when you want to join multiple non-nested elements per data point
+                    // This callback here is for newly added elements.
                     let select = enter.append('g');
 
                     select.append('rect')
@@ -103,7 +111,32 @@ export default {
                         .attr('dx', '0.7rem')
                         .attr('dy', '0.7rem')
                     return select
-                })
+                }, // you can add callbacks for updating elements and removing elements as other arguments here.
+                )
+            
+            /* // Equivalent to above, but iterates through data twice.
+            const rects = legendContainer.append('g')
+                .attr('transform', `translate(0, ${titleHeight})`)
+                .selectAll('rect')
+                .data<string>(clusterLabels)
+                .join('rect')
+                .attr('width', rectSize).attr('height', rectSize)
+                .attr('x', 5).attr('y', (d: string, idx: number) => idx * rectSize * 1.5)
+                .style('fill', (d: string) => colorScale(d) as string)
+
+            const labels = legendContainer.append('g')
+                .attr('transform', `translate(0, ${titleHeight})`)
+                .selectAll('text')
+                .data<string>(clusterLabels)
+                .join('text')
+                .text((d: string) => d)
+                .style('font-size', '.7rem')
+                .style('text-anchor', 'start')
+                .attr('x', rectSize)
+                .attr('y', (d: string, idx: number) => idx * rectSize * 1.5)
+                .attr('dx', '0.7rem')
+                .attr('dy', '0.7rem')
+            */
 
             const title = legendContainer
                 .append('text')
@@ -115,10 +148,10 @@ export default {
                 .attr('dy', '0.7rem')
         }
     },
-    watch: {
+    watch: { // updated because a legend is added.
         rerender(newSize) {
             if (!isEmpty(newSize)) {
-                d3.select('#scatter-svg').selectAll('*').remove() // Clean all the elements in the chart
+                d3.select('#scatter-svg').selectAll('*').remove()
                 d3.select('#scatter-legend-svg').selectAll('*').remove()
                 this.initChart()
                 this.initLegend()
@@ -149,6 +182,7 @@ export default {
     </div>
 </template>
 
+<!-- How we arrange the two svgs with css-->
 <style scoped>
 .viz-container{
     height:100%;

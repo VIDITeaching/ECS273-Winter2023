@@ -1,28 +1,33 @@
 <script lang="ts">
 import * as d3 from "d3";
 import { debounce, isEmpty } from 'lodash';
-import { mapState, storeToRefs } from 'pinia';
-
-
 import { Point } from '../types';
 interface ScatterPoint extends Point{
     cluster: string;
 }
 
+/* The new major things from ExampleWithLegend.vue
+1) Add a dropdown menu to switch between different DR techniques, the changes are mostly in the template
+2) Using a store from './dashboard/stores/exampleStore'
+3) Composition API rather than Option API (just used a little bit)
+*/
+
+// For importing a store. See how it's set up in ./dashboard/stores/ and ./dashboard/main.ts
+import { mapState, storeToRefs } from 'pinia'; 
 import { useExampleStore } from '../stores/exampleStore';
 
 export default {
-    setup() {
+    setup() { // Composition API syntax
         const store = useExampleStore()
         // Alternative expression from computed
         const { resize } = storeToRefs(store);
         return {
-            store,
+            store, // Return store as the local state, but when you update the property value, the store is also updated.
             resize,
         }
     },
     computed: {
-        ...mapState(useExampleStore, ['selectedMethod'])
+        ...mapState(useExampleStore, ['selectedMethod']) // Traditional way to map the store state to the local state
     },
     created() {
         this.store.fetchExample(this.selectedMethod);
@@ -31,7 +36,7 @@ export default {
         onResize() {
             let target = this.$refs.scatterContainer as HTMLElement
             if (target === undefined || target === null) return;
-            this.store.size = { width: target.clientWidth, height: target.clientHeight };
+            this.store.size = { width: target.clientWidth, height: target.clientHeight }; // How you update the store
         },
         initChart() {
             let chartContainer = d3.select('#scatter-svg')
@@ -117,17 +122,17 @@ export default {
         }
     },
     watch: {
-        resize(newSize) {
+        resize(newSize) { // when window resizes
             if ((newSize.width !== 0) && (newSize.height !== 0)) {
                 this.rerender()
             }
         },
-        'store.points'(newPoints) {
+        'store.points'(newPoints) { // when data changes
             if (!isEmpty(newPoints)) {
-                this.rerender
+                this.rerender()
             }
         },
-        selectedMethod(newMethod) {
+        selectedMethod(newMethod) { // function triggered when a different method is selected via dropdown menu
             this.store.fetchExample(newMethod)
         }
     },
@@ -141,8 +146,8 @@ export default {
 }
 </script>
 
-<!-- We use flex to arrange the layout-->
-<!-- <v-select :items="methods" label="Yo" outlined dense></v-select> -->
+<!-- We only use vanilla widgets here, you can use the equivalent components from the UI library -->
+<!-- Helpful References: https://vuejs.org/guide/essentials/class-and-style.html#binding-html-classes -->
 <template>
     <div class="viz-container d-flex justify-end">
         <div class="chart-container d-flex" ref="scatterContainer">

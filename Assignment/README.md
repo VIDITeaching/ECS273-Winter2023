@@ -73,7 +73,6 @@ npm install <package-name>
 
 \*This template has been tested with Python3.10.8 and Node.js v19.3.0.
 
----
 
 ## Part 1. Create Two Static Visualizations
 
@@ -110,11 +109,17 @@ In other words, your choice of user interaction shall benefit the user in some w
    * Dropdown menu (e.g., select different techniques/hyperparameters)
    * Slider (e.g., filter based on data attributes)
    * Input (e.g., key in keywords)
- * Tooltip
- * Brush
- * Zoom (+ Pan)
+ * Tooltip with hovering - Provide more details of the hovered object. 
+ * Brushing - The selection of a subset of the displayed data in the visualization by either dragging the mouse over the data of interest or using a bounding shape to isolate this subset.
+ * Zoom (+ Pan) - like cameras, rescale the plot to focus on a part of the visualization
+ * Pick - select one or multiple data points (they do not need to be neighboring data points or in sequence)
+ * Toggle - toggle some properties (e.g., visibility) or options (e.g., display uncertainty), which can be done with widgets such as checkboxes.
 
+While animations and transistions provide good UX and smoothen the transitions between different states of the application, they are not required for this assignment. 
+ 
 # Requirements
+The goal of this assignment is to learn how to create visualizations with d3.js, how to incorporate interaction techniques to drill-down or explore data, how to arrange the layout of the dashboard, and how to work with API calls in a web-based application. 
+
  - The dashboard must have at least two visualizations, which should be created with at least two different visualization methods (see above).
  - At least one of the views should support one kind of appropriate user interactions at minimum (see above).
  - **Legends** for each view need to be provided as well as **axis labels** and **chart titles**.
@@ -127,6 +132,7 @@ In other words, your choice of user interaction shall benefit the user in some w
  - Carefully choose the user interactions and consider their effectiveness for supporting data exploration and/or analytical reasoning. 
  - The visualizations should depict different dimensions or aspects of the dataset to be examined. So you are encouraged to perform data analysis with our templates (`./server/resources`) as they are helpful.
 
+For example, in the provided demo we show the projection of a high-dimensional dataset using different DR techniques, where both techniques reveal the separation among 3 known clusters (cultivars). On top of this, if we want to analyze the differences between these clusters, we can add another [overlaying histogram] (https://d3-graph-gallery.com/graph/histogram_double.html) that shows the data distributions of the clusters per attribute. The purpose of this histogram to show the characteristics of a cluster in terms of data attribute values, and overlaying allows the comparison of multiple clusters in terms of their characteristics. We can provide a dropdown menu to switch between different attributes, or toggle the visibility of the clusters to avoid visual clutter while focusing on analysis target (eager to happen due to overlaying).
 
 # Submission
 To submit for this assignment, you need to first [fork](https://docs.github.com/en/free-pro-team@latest/github/getting-started-with-github/fork-a-repo) this [repository](https://github.com/VIDITeaching/ECS273-Winter2023). After the fork, clone the forked repository using the following commands: 
