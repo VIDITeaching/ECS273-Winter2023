@@ -7,3 +7,5 @@ networkx
 nltk
 wordcloud
 matplotlib
+seaborn
+statsmodels

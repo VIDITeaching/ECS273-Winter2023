@@ -30,7 +30,7 @@ We recommend you spend time understanding the demo, as it will help you succeed 
 ## Setting up Everything
 
 ### Step 1. Choose a Dataset
-In this assignment, you can choose one of the datasets mentioned on any data type page in the [Pages](https://canvas.ucdavis.edu/courses/772842/pages).
+In this assignment, **except the dataset used in the demo ([wine dataset](https://archive.ics.uci.edu/ml/datasets/wine))**, you can choose one of the datasets mentioned on any data type page in the [Pages](https://canvas.ucdavis.edu/courses/772842/pages).
 
 To use a dataset, you can either
 - download the data file from the respective URL above and put it in the `./Vue-Flask-Template/server/data` folder, or
@@ -76,7 +76,7 @@ npm install <package-name>
 
 ## Part 1. Create Two Static Visualizations
 
-Your task is to implement two visualization views, with at least one view providing appropriate one kind of user interactions, and place the two views side by side. Detailed requirements are listed below.
+Your task is to implement two visualization views, with at least one view providing one kind of appropriate user interactions, and place the two views side by side. Detailed requirements are listed below.
 
 ### Examples of visualization methods
 
@@ -125,14 +125,14 @@ The goal of this assignment is to learn how to create visualizations with d3.js,
  - **Legends** for each view need to be provided as well as **axis labels** and **chart titles**.
  - The two visualizations should be placed **side by side** and fit on a fullscreen browser.
  - The data used in these visualizations **must** be fetched from the server. 
- - The demo examples **cannot** be counted as one of the views, even if it reads a different dataset.
+ - The demo examples **cannot** be counted as one of the views, even if it reads a different dataset. You can still implement a scatter plot with different interactions or a dropdown menu with different visualizations.
  - Choose appropriate visual encodings.
  - Color choice matters and has an effect on the interpretability of the visualization. Depending on the data, the type of color scale you use will change (e.g., categorical, linear, etc).
  - Carefully consider the design for each encoding that you will use and its effectiveness for portraying the data. Depending on the data you are visualizing, certain pairings of marks and channels will be more effective.
  - Carefully choose the user interactions and consider their effectiveness for supporting data exploration and/or analytical reasoning. 
  - The visualizations should depict different dimensions or aspects of the dataset to be examined. So you are encouraged to perform data analysis with our templates (`./server/resources`) as they are helpful.
 
-For example, in the provided demo we show the projection of a high-dimensional dataset using different DR techniques, where both techniques reveal the separation among 3 known clusters (cultivars). On top of this, if we want to analyze the differences between these clusters, we can add another [overlaying histogram] (https://d3-graph-gallery.com/graph/histogram_double.html) that shows the data distributions of the clusters per attribute. The purpose of this histogram to show the characteristics of a cluster in terms of data attribute values, and overlaying allows the comparison of multiple clusters in terms of their characteristics. We can provide a dropdown menu to switch between different attributes, or toggle the visibility of the clusters to avoid visual clutter while focusing on analysis target (eager to happen due to overlaying).
+For example, in the provided demo we show the projection of a high-dimensional dataset using different DR techniques, where both techniques reveal the separation among 3 known clusters (cultivars). On top of this, if we want to analyze the differences between these clusters, we can add another [overlaying histogram](https://d3-graph-gallery.com/graph/histogram_double.html) that shows the data distributions of the clusters per attribute. The purpose of this histogram to show the characteristics of a cluster in terms of data attribute values, and overlaying allows the comparison of multiple clusters in terms of their characteristics. We can provide a dropdown menu to switch between different attributes, or toggle the visibility of the clusters to avoid visual clutter while focusing on analysis target (eager to happen due to overlaying).
 
 # Submission
 To submit for this assignment, you need to first [fork](https://docs.github.com/en/free-pro-team@latest/github/getting-started-with-github/fork-a-repo) this [repository](https://github.com/VIDITeaching/ECS273-Winter2023). After the fork, clone the forked repository using the following commands: 

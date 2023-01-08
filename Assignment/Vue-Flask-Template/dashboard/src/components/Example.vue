@@ -70,6 +70,7 @@ export default {
             // There are other scales such as scaleOrdinal and scaleBand, 
                 // whichever is appropriate depends on the data types and the kind of visualizations you're creating.
 
+            //TODO: add axis labels
             /* This following part visualizes the axes. We did not do it because the x- and y- axis in DR projections usually mean nothing.
             // Check out https://observablehq.com/@d3/margin-convention?collection=@d3/d3-axis
             const xAxis = chartContainer.append('g')
