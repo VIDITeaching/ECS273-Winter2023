@@ -1,6 +1,6 @@
 <script lang="ts">
 import { useExampleStore } from '../stores/exampleStore';
-import { watch } from 'vue';
+import { watch, ref } from 'vue';
 
 export default {
   setup() {
@@ -8,15 +8,18 @@ export default {
     // This is the state read from store
     // This is showing how the store update from one component will also be reflected in other components
     watch(store, (state) => { 
-      console.log(state.size)
+      console.log('state.size', state.size)
     })
+    const count = ref(0);
     return {
-      count: 0 // This is the local state of this component
+      count
     }
   },
   props: {
     msg: String, // This is the props passed down from the parent component
   },
+  methods: {
+    },
 }
 </script>
 

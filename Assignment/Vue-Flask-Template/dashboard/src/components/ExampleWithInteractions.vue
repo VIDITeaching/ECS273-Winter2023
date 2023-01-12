@@ -39,7 +39,7 @@ export default {
             this.store.size = { width: target.clientWidth, height: target.clientHeight }; // How you update the store
         },
         initChart() {
-            let chartContainer = d3.select('#scatter-svg')
+            let chartContainer = d3.select('#scatter-svg-interactions')
 
             let xExtents = d3.extent(this.store.points.map((d: ScatterPoint) => d.posX as number)) as [number, number]
             let yExtents = d3.extent(this.store.points.map((d: ScatterPoint) => d.posY as number)) as [number, number]
@@ -74,7 +74,7 @@ export default {
                 .text(`Wine Dataset ${this.selectedMethod} Projection`)
         },
         initLegend() {
-            let legendContainer = d3.select('#scatter-legend-svg')
+            let legendContainer = d3.select('#scatter-legend-svg-interactions')
 
             let clusterLabels: string[] = this.store.clusters.map((cluster: string, idx: number) => `Cultivar ${idx+1}`)
             let colorScale = d3.scaleOrdinal().domain(clusterLabels).range(d3.schemeTableau10)
@@ -115,8 +115,8 @@ export default {
                 .attr('dy', '0.7rem')
         },
         rerender() {
-            d3.select('#scatter-svg').selectAll('*').remove() // Clean all the elements in the chart
-            d3.select('#scatter-legend-svg').selectAll('*').remove()
+            d3.select('#scatter-svg-interactions').selectAll('*').remove() // Clean all the elements in the chart
+            d3.select('#scatter-legend-svg-interactions').selectAll('*').remove()
             this.initChart()
             this.initLegend()
         }
@@ -151,7 +151,7 @@ export default {
 <template>
     <div class="viz-container d-flex justify-end">
         <div class="chart-container d-flex" ref="scatterContainer">
-            <svg id="scatter-svg" width="100%" height="100%">
+            <svg id="scatter-svg-interactions" width="100%" height="100%">
             </svg>
         </div>
         <div id="scatter-control-container" class="d-flex">
@@ -163,7 +163,7 @@ export default {
                     </select>
                 </label>
             </div>
-            <svg id="scatter-legend-svg" width="100%" height="80%">
+            <svg id="scatter-legend-svg-interactions" width="100%" height="80%">
             </svg>
         </div>
 
