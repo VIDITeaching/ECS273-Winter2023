@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 from controller import processExample
+import csv
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -25,5 +27,17 @@ def fetchExample():
         return resp
 
 
+@app.route("/fetchRent", methods=["GET", "POST"])
+@cross_origin()
+def fetchRent():
+    data = []
+    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+    csv_url = os.path.join(SITE_ROOT, "data/SF-Rentals/rent_subset.csv")
+    with open(csv_url) as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        for row in csv_reader:
+            data.append(row)
+    return jsonify(data)
+    # return os.getcwd()
 if __name__ == "__main__":
     app.run(port=3100, debug=True)

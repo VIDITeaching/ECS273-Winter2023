@@ -1,5 +1,8 @@
 import pandas as pd
 import numpy as np
+
+import os
+
 from sklearn.datasets import load_wine
 from resources.hd_processing_template import perform_PCA, perform_TSNE
 #from resources.network_process_template import contsruct_networkx
@@ -16,7 +19,7 @@ def processExample(method: str = 'PCA') -> tuple[list[dict], list[int]]:
     if method == 'PCA':
         Z, _ = perform_PCA(X)
     elif method == 't-SNE':
-        Z = perform_TSNE(X, perplexity = 10)
+        Z = perform_TSNE(X) #, perplexity = 100)
     else:
         raise ValueError("Requested a method that is not supported")
     points = pd.DataFrame(Z, columns=['posX', 'posY'])
