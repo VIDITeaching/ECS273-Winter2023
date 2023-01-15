@@ -3,6 +3,7 @@ from flask_cors import CORS, cross_origin
 from controller import processExample
 import csv
 import os
+import pandas as pd
 
 app = Flask(__name__)
 CORS(app)
@@ -32,10 +33,17 @@ def fetchExample():
 def fetchRent():
     data = []
     SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
-    csv_url = os.path.join(SITE_ROOT, "data/SF-Rentals/rent_subset.csv")
+    csv_url = os.path.join(SITE_ROOT, "data/SF-Rentals/rent_subset_full.csv")
+    
     with open(csv_url) as csv_file:
         csv_reader = csv.DictReader(csv_file)
         for row in csv_reader:
+            # Iterate through the items in the row and cast them to float if they're numeric
+            for key, value in row.items():
+                try:
+                    row[key] = float(value)
+                except ValueError:
+                    pass
             data.append(row)
     return jsonify(data)
     # return os.getcwd()
