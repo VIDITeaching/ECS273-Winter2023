@@ -70,9 +70,10 @@ export default {
             // There are other scales such as scaleOrdinal and scaleBand, 
                 // whichever is appropriate depends on the data types and the kind of visualizations you're creating.
 
-            //TODO: add axis labels
-            /* This following part visualizes the axes. We did not do it because the x- and y- axis in DR projections usually mean nothing.
+            /*
+            // This following part visualizes the axes. We did not do it because the x- and y- axis in DR projections usually mean nothing for interpretation.
             // Check out https://observablehq.com/@d3/margin-convention?collection=@d3/d3-axis
+            // Note that for axis labels, this is just a demostration, their positions are not perfect.
             const xAxis = chartContainer.append('g')
                 .attr('transform', `translate(0, ${this.size.height - this.margin.bottom})`)
                 .call(d3.axisBottom(xScale))
@@ -80,6 +81,16 @@ export default {
             const yAxis = chartContainer.append('g')
                 .attr('transform', `translate(${this.margin.left}, 0)`)
                 .call(d3.axisLeft(yScale))
+
+            const yLabel = chartContainer.append('g')
+                .attr('transform', `translate(${this.margin.left}, ${this.size.height / 2 + this.margin.top}) rotate(-90)`)
+                .append('text')
+                .text('PC2')
+
+            const xLabel = chartContainer.append('g')
+                .attr('transform', `translate(${this.size.width / 2}, ${this.size.height - this.margin.top})`)
+                .append('text')
+                .text('PC1')
             */
 
             // Similar to above but now we are creating the color scale with scaleOrdinal.
