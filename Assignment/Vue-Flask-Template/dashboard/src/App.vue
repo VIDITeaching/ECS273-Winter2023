@@ -6,6 +6,8 @@ import ExampleWithInteractions from './components/ExampleWithInteractions.vue';
 import ParallelCoords from './components/ParallelCoords.vue';
 
 import Rent from './components/Rent.vue';
+import Sankey from './components/Sankey.vue';
+import Controls from './components/Controls.vue';
 
 export default {
   components: {
@@ -14,9 +16,12 @@ export default {
     ExampleWithLegend,
     ExampleWithInteractions,
     Rent,
-    ParallelCoords
+    ParallelCoords,
+    Sankey,
+    Controls
   }
-}
+};
+
 </script>
 
 <!--This is using the grid component from Vuetify to do layout design-->
@@ -28,6 +33,9 @@ export default {
       </v-col>
       <v-col cols="5">
         <ParallelCoords/>
+      </v-col>
+      <v-col cols="5"> 
+        <Sankey/>
       </v-col>
     </v-row>
     <v-row no-gutters>

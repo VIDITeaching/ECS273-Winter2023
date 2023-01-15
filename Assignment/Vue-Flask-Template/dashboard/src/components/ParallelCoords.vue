@@ -78,6 +78,10 @@ export default {
             // append the svg object to the body of the page
             const svg = chartContainer
                 .append("g")
+                
+                .attr("ref", 'idk')
+                .attr('width', '100%')
+                .attr('height', '100%')
                 // .attr("width", this.store.size.width + this.store.margin.left + this.store.margin.right)
                 // .attr("height", this.store.size.height + this.store.margin.top + this.store.margin.bottom)
                 
@@ -119,23 +123,55 @@ export default {
             // Build the X scale -> it find the best position for each Y axis
             let x = d3.scalePoint()
                 .range([0, this.store.size.width - this.store.margin.right])
-                .padding(1)
+                .padding(.1)
                 .domain(dimensions);
 
+                console.log('x: ', x)
             // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
-            function path(d) {
+            function path(d: { [x: string]: d3.NumberValue; }) {
                 return d3.line()(dimensions.map(function (p) { return [x(p), y[p](d[p])]; }));
             }
+
+            const color = d3.scaleOrdinal()
+                .domain(["setosa", "versicolor", "virginica" ])
+                .range([ "#440154ff", "#21908dff", "#fde725ff"])
+
+            // Highlight the specie that is hovered
+            const highlight = function(event: any, d: { city: any; }){
+
+            // first every group turns grey
+            d3.selectAll(".line")
+            .transition().duration(200)
+            .style("stroke", "lightgrey")
+            .style("opacity", "0.2")
+            // Second the hovered specie takes its color
+            d3.selectAll("." + d.city)
+            .transition().duration(200)
+            .style("stroke", (d: any) => `${color(d.city)}`)
+            .style("opacity", "1")
+            }
+
+            // Unhighlight
+            const doNotHighlight = function(event: any, d: any){
+            d3.selectAll(".line")
+            .transition().duration(200).delay(1000)
+            .style("stroke", (d: any) => `${color(d.city)}`)
+            .style("opacity", "1")
+            } 
 
             // Draw the lines
             svg
                 .selectAll("myPath")
                 .data(data)
                 .join("path")
-                .attr("d", path)
-                .style("fill", "none")
-                .style("stroke", "#69b3a2")
-                .style("opacity", 0.5)
+                    .attr("class", (d: any) => `line ${d.city}`)
+                    .attr("d", path)
+                    .style("fill", "none")
+                    .style("stroke", (d: any) => `${color(d.city)}` )
+                    // .style("stroke", "#69b3a2")
+                    .style("opacity", 0.5)
+                    .on("mouseover", highlight)
+                    .on("mouseleave", doNotHighlight )
 
             // Draw the axis:
             svg.selectAll("myAxis")
@@ -193,15 +229,16 @@ export default {
 <style scoped>
 .viz-container{
     height:100%;
+    width: 100%; 
     flex-direction: row;
     flex-wrap: nowrap;
 }
 .chart-container{
     height: 100%;
-
     flex-direction: row;
     flex-wrap: nowrap;
-    width: calc(100% - 6rem);
+    width: 100%; 
+    /* calc(100% - 6rem); */
 }
 #parallel{
     width: 6rem;
