@@ -8,6 +8,7 @@ import ParallelCoords from './components/ParallelCoords.vue';
 import Rent from './components/Rent.vue';
 import Sankey from './components/Sankey.vue';
 import Controls from './components/Controls.vue';
+import StackedChart from './components/StackedChart.vue';
 
 export default {
   components: {
@@ -18,7 +19,8 @@ export default {
     Rent,
     ParallelCoords,
     Sankey,
-    Controls
+    Controls,
+    StackedChart
   }
 };
 
@@ -31,12 +33,17 @@ export default {
       <v-col cols="5">
         <ExampleWithInteractions/>
       </v-col>
-      <v-col cols="5">
+      <!-- <v-col cols="5">
         <ParallelCoords/>
+      </v-col> -->
+      <v-col cols="5">
+        <StackedChart/>
       </v-col>
+
+<!-- 
       <v-col cols="5"> 
         <Sankey/>
-      </v-col>
+      </v-col> -->
     </v-row>
     <v-row no-gutters>
       <v-col>
@@ -50,4 +57,6 @@ export default {
 #main-container{
   height: 100vh;
 }
+
+
 </style>

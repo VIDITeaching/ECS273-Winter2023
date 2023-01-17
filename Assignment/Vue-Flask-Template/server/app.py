@@ -1,8 +1,10 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS, cross_origin
 from controller import processExample
 import csv
 import os
+import io
+import json
 import pandas as pd
 
 app = Flask(__name__)
@@ -46,6 +48,42 @@ def fetchRent():
                     pass
             data.append(row)
     return jsonify(data)
-    # return os.getcwd()
+
+@app.route("/fetchOther", methods=["GET", "POST"])
+@cross_origin()
+def fetchOther():
+    data = []
+    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+    json_url = os.path.join(SITE_ROOT, "data/data.json")
+    with open(json_url) as json_file:
+        data = json.load(json_file)
+    return jsonify(data)
+
+
+@app.route("/fetchHousing", methods=["GET", "POST"])
+@cross_origin()
+def fetchRents():
+    data = []
+    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+    csv_url = os.path.join(SITE_ROOT, "data/rents.csv")
+    with open(csv_url) as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        for row in csv_reader:
+            # # Iterate through the items in the row and cast them to float if they're numeric
+            # for key, value in row.items():
+            #     try:
+            #         row[key] = float(value)
+            #     except ValueError:
+            #         pass
+            data.append(row)
+    si = io.StringIO()
+    cw = csv.DictWriter(si, fieldnames=data[0].keys())
+    cw.writeheader()
+    cw.writerows(data)
+    output = make_response(si.getvalue())
+    output.headers["Content-type"] = "text/plain"
+    return output
+
+
 if __name__ == "__main__":
     app.run(port=3100, debug=True)
