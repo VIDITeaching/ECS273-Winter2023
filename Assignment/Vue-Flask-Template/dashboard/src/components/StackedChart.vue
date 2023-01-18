@@ -1,12 +1,12 @@
 
 <template>
-        <!-- <div class="outer" ref="parallelContainer">
+    <!-- <div class="outer" ref="parallelContainer">
             <div class="inner"><svg id="stacked-svg"></svg></div>
         </div> -->
-        <div ref="parallelContainer" class="chart-container outer d-flex" >
-            
-            <svg id="stacked-svg" class = "inner"></svg>
-        </div>
+    <div ref="parallelContainer" class="chart-container outer d-flex">
+
+        <svg id="stacked-svg" class="inner"></svg>
+    </div>
 </template>
   
 <script lang="ts">
@@ -42,7 +42,7 @@ export default {
 
         onResize() {
             let target = this.$refs.parallelContainer as HTMLElement
-            
+
             console.log('resize: ', target.clientWidth)
             if (target === undefined || target === null) return;
             this.store.size = { width: target.clientWidth, height: target.clientHeight };
@@ -57,7 +57,7 @@ export default {
                 .attr('height', this.store.size.height + this.store.margin.top + this.store.margin.bottom)
                 .append("g")
                 .attr("transform", `translate(${this.store.margin.left}, ${-this.store.margin.bottom})`);
-                    
+
             console.log('this.store.margin: ', this.store.margin)
             console.log('this.store.size: ', this.store.size)
 
@@ -83,10 +83,10 @@ export default {
             const x = d3.scaleLinear()
                 .domain(d3.extent(data, function (d: DataPoint) { return d.year; }))
                 .range([0, this.store.size.width]);
-                
+
             svg.append("g")
                 .attr("transform", `translate(0, ${this.store.size.height})`)
-                
+
                 .call(d3.axisBottom(x).ticks(10).tickFormat(d3.format("")));
 
             svg.append("text")
@@ -94,11 +94,11 @@ export default {
                 .attr("x", this.store.size.width / 2)
                 .attr("y", this.store.size.height + this.store.margin.bottom - 3)
                 .text("Year");
-                var maxValue = d3.max(data, function(d) {
-                    var values = Object.values(d);
-                    values.shift(); // remove first element "year"
-                    return d3.max(values.map(Number));
-                });
+            var maxValue = d3.max(data, function (d) {
+                var values = Object.values(d);
+                values.shift(); // remove first element "year"
+                return d3.max(values.map(Number));
+            });
 
             console.log(maxValue);
 
@@ -114,7 +114,19 @@ export default {
                 return maxValue;
             }
 
-            
+
+            function getMin(data: any) {
+                let maxRow = data.reduce((maxRow: any, currentRow: any) => {
+                    let currentRowSum = d3.sum(Object.values(currentRow).map(Number));
+                    let maxRowSum = d3.sum(Object.values(maxRow).map(Number));
+                    return currentRowSum > maxRowSum ? currentRow : maxRow;
+                });
+                let maxValue = d3.sum(Object.values(maxRow).map(Number));
+                console.log('Maxrow: ', maxValue);
+                return maxValue;
+            }
+
+
 
 
             const y = d3.scaleLinear()
@@ -133,27 +145,125 @@ export default {
                 .text("New Housing Production")
 
             const color = d3.scaleOrdinal(d3.schemeCategory10)
+            
                 .domain(keys)
+                .range(d3.schemeTableau10)
 
             const stackedData = d3.stack()
+            // .offset(d3.stackOffsetSilhouette)
                 .keys(keys)
-                (data)
-
-            svg
-                .selectAll("mylayers")
+                .value((d,key) => {
+                    return d[key] < 0 ? 0: d[key];
+                })(data)
                 
+
+            // Add a clipPath: everything out of this area won't be drawn.
+            const clip = svg.append("defs").append("svg:clipPath")
+                .attr("id", "clip")
+                .append("svg:rect")
+                .attr("width", this.store.size.width )
+                .attr("height", this.store.size.height )
+                .attr("x", 0)
+                .attr("y", 0);
+
+            // Add brushing
+            const brush = d3.brushX()                 // Add the brush feature using the d3.brush function
+                .extent([[0, 0], [this.store.size.width, this.store.size.height]])
+                .on("end", function (event, d) {
+                    console.log('brush: ', event, d)
+
+                }) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+            // .on("end", updateChart) // Each time the brush selection changes, trigger the 'updateChart' function
+
+            // Create the scatter variable: where both the circles and the brush take place
+            const areaChart = svg.attr("class", "brush")
+                //   
+                .append('g')
+                .call(brush)
+                .attr("clip-path", "url(#clip)")
+
+            areaChart
+                .selectAll("mylayers")
+
                 .data(stackedData)
                 .join("path")
-                .style("fill", function (d) { return color(d.key); })
-                
+
+                .attr("class", function (d) {
+                    console.log('replace: ', d.key.replaceAll(' ', ''))
+                    return "myArea " + d.key.replaceAll(' ', '')
+                })
+                .style("fill", function (d) {
+                    console.log('d: ', d)
+                    return color(d.key);
+                })
                 .attr("d", d3.area()
                     .x((d: any, i: any) => x(d.data.year))
                     .y0((d: any) => y(d[0]))
                     .y1((d: any) => y(d[1]))
                 )
-                // .attr('height', '90%')
-                // .attr('width', '90%')
-                // .attr("transform", `translate(${this.store.margin.left}, ${-this.store.margin.bottom})`);
+
+                .on("mouseover", function (event, d) {
+                    console.log('mouseover: ', d)
+   
+                    highlight(d.key.replaceAll(' ', ''))
+                    tooltip.html(
+                        `<div>County: ${d.key}</div>`
+                    )
+                        .style('visibility', 'visible');
+                })
+                .on('mousemove', function (event, d) {
+                    tooltip
+                        .style('top', (event.pageY - 10) + 'px')
+                        .style('left', (event.pageX + 10) + 'px');
+
+                    // get the x and y position of the mouse
+                    // var x = event.clientX - chart.getBoundingClientRect().left;
+                    // var y = event.clientY - chart.getBoundingClientRect().top;
+
+                })
+                .on("mouseleave", function (event, d) {
+                    noHighlight(d.key.replaceAll(' ', ''))
+                    tooltip.html(``).style('visibility', 'hidden');
+                })
+            // .attr('height', '90%')
+            // .attr('width', '90%')
+            // .attr("transform", `translate(${this.store.margin.left}, ${-this.store.margin.bottom})`);
+
+
+
+            //////////
+            // HIGHLIGHT GROUP //
+            //////////
+
+            let tooltip = d3
+                .select('body')
+                .append('div')
+                .attr('class', 'd3-tooltip')
+                .style('position', 'absolute')
+                .style('z-index', '10')
+                .style('visibility', 'hidden')
+                .style('padding', '10px')
+                .style('background', 'rgba(0,0,0,0.6)')
+                .style('border-radius', '4px')
+                .style('color', '#fff')
+                .text('a simple tooltip');
+
+
+            // What to do when one group is hovered
+            var highlight = function (d: any) {
+                console.log('highlight: ', d)
+                // reduce opacity of all groups
+                d3.selectAll(".myArea").style("opacity", .25)
+                // expect the one that is hovered
+                d3.select("." + d)
+                .style("stroke", "black").style("opacity", 1)
+
+            }
+
+            // And when it is not hovered anymore
+            var noHighlight = function (d: any) {
+                d3.selectAll(".myArea").style("opacity", 1).style("stroke", "none")
+            }
 
 
         },
@@ -182,7 +292,7 @@ export default {
         },
         'store.housing'(data) { // when data changes
             if (!isEmpty(data)) {
-            this.rerender()
+                this.rerender()
             }
         },
 
@@ -195,7 +305,6 @@ export default {
 
 
 <style scoped>
-
 .chart-container {
     height: 100%;
     flex-direction: column;
@@ -214,11 +323,10 @@ export default {
 }
 
 .outer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* background-color: red; */
-  height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* background-color: red; */
+    height: 500px;
 }
-
 </style>
