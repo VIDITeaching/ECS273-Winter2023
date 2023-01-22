@@ -9,6 +9,7 @@ import Rent from './components/Rent.vue';
 import Sankey from './components/Sankey.vue';
 import Controls from './components/Controls.vue';
 import StackedChart from './components/StackedChart.vue';
+import BubbleMap from './components/BubbleMap.vue';
 
 export default {
   components: {
@@ -20,7 +21,8 @@ export default {
     ParallelCoords,
     Sankey,
     Controls,
-    StackedChart
+    StackedChart,
+    BubbleMap
   }
 };
 
@@ -31,7 +33,7 @@ export default {
   <v-container id="main-container" class="d-flex flex-column flex-nowrap" fluid>
     <v-row no-gutters>
       <v-col cols="5">
-        <ExampleWithInteractions/>
+        <BubbleMap/>
       </v-col>
       <!-- <v-col cols="5">
         <ParallelCoords/>

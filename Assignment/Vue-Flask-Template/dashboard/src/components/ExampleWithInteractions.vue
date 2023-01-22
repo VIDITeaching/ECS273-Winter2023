@@ -41,6 +41,7 @@ export default {
         initChart() {
             let chartContainer = d3.select('#scatter-svg-interactions')
 
+            console.log('storey: ', this.store.points)
             let xExtents = d3.extent(this.store.points.map((d: ScatterPoint) => d.posX as number)) as [number, number]
             let yExtents = d3.extent(this.store.points.map((d: ScatterPoint) => d.posY as number)) as [number, number]
 

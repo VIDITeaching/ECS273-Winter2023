@@ -44,7 +44,7 @@ export default {
             this.size = { width: target.clientWidth, height: target.clientHeight };
         },
         initChart() {
-            let chartContainer = d3.select('#scatter-svg')
+            let chartContainer = d3.select('#scatter-svg-legend')
 
             let xExtents = d3.extent(this.points.map((d: ScatterPoint) => d.posX as number)) as [number, number]
             let yExtents = d3.extent(this.points.map((d: ScatterPoint) => d.posY as number)) as [number, number]
@@ -150,8 +150,10 @@ export default {
     },
     watch: { // updated because a legend is added.
         rerender(newSize) {
+            console.log('new?')
             if (!isEmpty(newSize)) {
-                d3.select('#scatter-svg').selectAll('*').remove()
+                console.log('eh?')
+                d3.select('#scatter-svg-legend').selectAll('*').remove()
                 d3.select('#scatter-legend-svg').selectAll('*').remove()
                 this.initChart()
                 this.initLegend()
@@ -172,7 +174,7 @@ export default {
 <template>
     <div class="viz-container d-flex justify-end">
         <div class="chart-container d-flex" ref="scatterContainer">
-            <svg id="scatter-svg" width="100%" height="100%">
+            <svg id="scatter-svg-legend" width="100%" height="100%">
             </svg>
         </div>
         <div id="scatter-legend-container" class="d-flex">

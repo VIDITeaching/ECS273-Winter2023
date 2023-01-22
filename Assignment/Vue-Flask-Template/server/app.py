@@ -84,6 +84,24 @@ def fetchRents():
     output.headers["Content-type"] = "text/plain"
     return output
 
+@app.route("/fetchCitiesWithCoords", methods=["GET", "POST"])
+@cross_origin()
+def fetchCitiesWithCoords():
+    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+    json_url = os.path.join(SITE_ROOT, "data/citiesWithCoords.json")
+    with open(json_url) as json_file:
+        data = json.load(json_file)
+    return jsonify(data)
+
+
+
+@app.route("/fun", methods=["GET", "POST"])
+@cross_origin()
+def go():
+    return "<p>Hello, World!</p>"
+
+
+
 
 if __name__ == "__main__":
     app.run(port=3100, debug=True)

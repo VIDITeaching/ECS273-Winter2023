@@ -1,0 +1,22 @@
+[
+  {
+    "city": "Alameda",
+    "county": "Alameda County",
+    "year": "1990",
+    "totalproduction": "295.0",
+    "sfproduction": "178.0",
+    "mfproduction": "96.0",
+    "mhproduction": "21.0",
+    "source": "DOF_E-8"
+  },
+  {
+    "city": "Albany",
+    "county": "Alameda County",
+    "year": "1990",
+    "totalproduction": "-12.0",
+    "sfproduction": "-1.0",
+    "mfproduction": "-11.0",
+    "mhproduction": "0.0",
+    "source": "DOF_E-8"
+  }
+]

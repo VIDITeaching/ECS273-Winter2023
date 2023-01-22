@@ -8,6 +8,7 @@ import Node from "./Sankey/Node.vue";
 import NodeTitle from "./Sankey/NodeTitle.vue";
 import Link from "./Sankey/Link.vue";
 import Gradient from "./Sankey/Gradient.vue";
+import { server } from '../helper';
 
 export default {
   name: "Sankey",
@@ -27,11 +28,13 @@ export default {
   }),
   async mounted() {
     const response = await fetch(
-      "https://raw.githubusercontent.com/ozlongblack/d3/master/energy.json"
+      `${server}/fetchOther`
     );
+
     let data = await response.json()
     console.log('response',data)
     this.data = data;
+  
   },
   methods: {
     removeEdge(edge) {
@@ -79,7 +82,7 @@ export default {
       deep: true,
       immediate: true,
       handler(data) {
-        console.log('sankey data: ', data)
+        // console.log('sankey data: ', data)
         if (!data) return;
         this.updateSankey();
       }

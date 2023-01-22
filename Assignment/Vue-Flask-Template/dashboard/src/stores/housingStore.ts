@@ -15,7 +15,7 @@ export const useHousingStore = defineStore('housingInteractions', {
         clusters: [] as string[],
         housing: [],
         size: { width: 0, height: 0 } as ComponentSize,
-        margin: { left: 250, right: 20, top: 20, bottom: 50 } as Margin,
+        margin: { left: 75, right: 50, top: 100, bottom: 50 } as Margin,
         methods: ['PCA', 't-SNE'] as string[],
         selectedMethod: 'PCA', // default value
     }),

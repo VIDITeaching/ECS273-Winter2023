@@ -74,6 +74,7 @@ export default {
             //     width = 500 - margin.left - margin.right,
             //     height = 400 - margin.top - margin.bottom;
 
+            console.log('otherstore.size: ', this.store.size)
             let chartContainer = d3.select('#parallel-svg-interactions')
             // append the svg object to the body of the page
             const svg = chartContainer
@@ -104,15 +105,15 @@ export default {
             // })
 
             let data = this.store.rent;
-            console.log('this.store.rent[0]: ', this.store.rent[1])
+            // console.log('this.store.rent[0]: ', this.store.rent[1])
             let dimensions = Object.keys(this.store.rent[0]).filter(function (d) { return d == 'baths' || d == 'beds' || d == 'price' || d == 'sqft' })
 
 
-            console.log('dimensions2: ', dimensions)
+            // console.log('dimensions2: ', dimensions)
             // For each dimension, I build a linear scale. I store all in a y object
             const y: { [key: string]: d3.ScaleLinear<number, number> } = {};
             for (const name of dimensions) {
-                console.log('name: ', name)
+                // console.log('name: ', name)
                 if(data.length > 0 && data[0][name]) {
                     y[name] = d3.scaleLinear()
                         .domain(d3.extent(data, (d) => +d[name]))
@@ -126,7 +127,7 @@ export default {
                 .padding(.1)
                 .domain(dimensions);
 
-                console.log('x: ', x)
+                // console.log('x: ', x)
             // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
             function path(d: { [x: string]: d3.NumberValue; }) {
                 return d3.line()(dimensions.map(function (p) { return [x(p), y[p](d[p])]; }));

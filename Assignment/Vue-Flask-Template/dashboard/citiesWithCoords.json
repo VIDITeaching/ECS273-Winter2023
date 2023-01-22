@@ -1,0 +1,222 @@
+{
+  "cities": [
+    { "name": "Alameda", "latitude": 37.7798721, "longitude": -122.2821855 },
+    { "name": "Albany", "latitude": 42.6525793, "longitude": -73.7562317 },
+    { "name": "Berkeley", "latitude": 37.8715226, "longitude": -122.273042 },
+    { "name": "Dublin", "latitude": 53.3498053, "longitude": -6.2603097 },
+    { "name": "Emeryville", "latitude": 37.8395028, "longitude": -122.2892278 },
+    { "name": "Fremont", "latitude": 37.5485396, "longitude": -121.988583 },
+    { "name": "Hayward", "latitude": 37.6687665, "longitude": -122.0809964 },
+    { "name": "Livermore", "latitude": 37.6818688, "longitude": -121.7684732 },
+    { "name": "Newark", "latitude": 40.735657, "longitude": -74.1723667 },
+    { "name": "Oakland", "latitude": 37.8043514, "longitude": -122.2711639 },
+    { "name": "Piedmont", "latitude": 45.0522366, "longitude": 7.5153885 },
+    { "name": "Pleasanton", "latitude": 37.6604484, "longitude": -121.8757968 },
+    {
+      "name": "San Leandro",
+      "latitude": 37.7257663,
+      "longitude": -122.1568554
+    },
+    { "name": "Union City", "latitude": 37.5933562, "longitude": -122.0438609 },
+    { "name": "Antioch", "latitude": 38.0049214, "longitude": -121.805789 },
+    { "name": "Brentwood", "latitude": 37.931868, "longitude": -121.6957863 },
+    {
+      "name": "Clayton",
+      "latitude": 38.6425518,
+      "longitude": -90.32372629999999
+    },
+    { "name": "Concord", "latitude": 37.9779776, "longitude": -122.0310733 },
+    { "name": "Danville", "latitude": 37.8215929, "longitude": -121.9999606 },
+    { "name": "El Cerrito", "latitude": 37.9161326, "longitude": -122.310765 },
+    { "name": "Lafayette", "latitude": 30.2240897, "longitude": -92.0198427 },
+    { "name": "Moraga", "latitude": 37.8349263, "longitude": -122.1296871 },
+    { "name": "Orinda", "latitude": 37.8771476, "longitude": -122.1796888 },
+    { "name": "Pinole", "latitude": 38.0043667, "longitude": -122.2988587 },
+    { "name": "Pittsburg", "latitude": 38.0279762, "longitude": -121.8846806 },
+    {
+      "name": "Pleasant Hill",
+      "latitude": 37.9479786,
+      "longitude": -122.0607963
+    },
+    { "name": "Richmond", "latitude": 37.5407246, "longitude": -77.4360481 },
+    { "name": "San Pablo", "latitude": 37.9621457, "longitude": -122.3455263 },
+    { "name": "San Ramon", "latitude": 37.7643595, "longitude": -121.9539616 },
+    {
+      "name": "Walnut Creek",
+      "latitude": 37.9100783,
+      "longitude": -122.0651819
+    },
+    {
+      "name": "Unincorporated Contra Costa",
+      "latitude": 37.8534093,
+      "longitude": -121.9017954
+    },
+    {
+      "name": "Belvedere",
+      "latitude": 40.0443928,
+      "longitude": -76.30707579999999
+    },
+    {
+      "name": "Corte Madera",
+      "latitude": 37.9254806,
+      "longitude": -122.5274755
+    },
+    {
+      "name": "Fairfax",
+      "latitude": 38.84622359999999,
+      "longitude": -77.30637329999999
+    },
+    { "name": "Larkspur", "latitude": 37.9340915, "longitude": -122.5352539 },
+    {
+      "name": "Mill Valley",
+      "latitude": 37.9060368,
+      "longitude": -122.5449763
+    },
+    { "name": "Novato", "latitude": 38.1074198, "longitude": -122.5697032 },
+    {
+      "name": "San Anselmo",
+      "latitude": 37.9746458,
+      "longitude": -122.5616448
+    },
+    { "name": "San Rafael", "latitude": 37.9735346, "longitude": -122.5310874 },
+    { "name": "Sausalito", "latitude": 37.8590937, "longitude": -122.4852507 },
+    { "name": "Tiburon", "latitude": 37.8735377, "longitude": -122.4566392 },
+    { "name": "Calistoga", "latitude": 38.5787965, "longitude": -122.5797054 },
+    { "name": "St. Helena", "latitude": 38.5052429, "longitude": -122.4703868 },
+    {
+      "name": "Yountville",
+      "latitude": 38.40157809999999,
+      "longitude": -122.3608105
+    },
+    {
+      "name": "San Francisco",
+      "latitude": 37.7749295,
+      "longitude": -122.4194155
+    },
+    { "name": "Atherton", "latitude": 37.4613272, "longitude": -122.197743 },
+    { "name": "Belmont", "latitude": -31.9497631, "longitude": 115.9297417 },
+    { "name": "Brisbane", "latitude": -27.4704528, "longitude": 153.0260341 },
+    { "name": "Burlingame", "latitude": 37.5778696, "longitude": -122.34809 },
+    { "name": "Colma", "latitude": 37.6749036, "longitude": -122.4561533 },
+    { "name": "Daly City", "latitude": 37.6879241, "longitude": -122.4702079 },
+    {
+      "name": "East Palo Alto",
+      "latitude": 37.4688273,
+      "longitude": -122.1410751
+    },
+    {
+      "name": "Foster City",
+      "latitude": 37.5585465,
+      "longitude": -122.2710788
+    },
+    {
+      "name": "Half Moon Bay",
+      "latitude": 37.4635519,
+      "longitude": -122.4285862
+    },
+    {
+      "name": "Hillsborough",
+      "latitude": 27.9903597,
+      "longitude": -82.3017728
+    },
+    { "name": "Menlo Park", "latitude": 37.4529598, "longitude": -122.1817252 },
+    { "name": "Millbrae", "latitude": 37.5985468, "longitude": -122.3871942 },
+    { "name": "Pacifica", "latitude": 37.6138253, "longitude": -122.4869194 },
+    {
+      "name": "Portola Valley",
+      "latitude": 37.3841066,
+      "longitude": -122.2352443
+    },
+    {
+      "name": "Redwood City",
+      "latitude": 37.4847955,
+      "longitude": -122.228141
+    },
+    { "name": "San Bruno", "latitude": 37.6304904, "longitude": -122.4110835 },
+    { "name": "San Carlos", "latitude": 37.5071591, "longitude": -122.2605222 },
+    { "name": "San Mateo", "latitude": 37.5629917, "longitude": -122.3255254 },
+    {
+      "name": "South San Francisco",
+      "latitude": 37.654656,
+      "longitude": -122.4077498
+    },
+    { "name": "Woodside", "latitude": 40.7532952, "longitude": -73.9068973 },
+    {
+      "name": "Unincorporated San Mateo",
+      "latitude": 37.5629917,
+      "longitude": -122.3255254
+    },
+    { "name": "Cupertino", "latitude": 37.3229978, "longitude": -122.0321823 },
+    { "name": "Gilroy", "latitude": 37.0029828, "longitude": -121.5566373 },
+    { "name": "Los Altos", "latitude": 37.3852183, "longitude": -122.1141298 },
+    {
+      "name": "Los Altos Hills",
+      "latitude": 37.3796627,
+      "longitude": -122.1374637
+    },
+    { "name": "Los Gatos", "latitude": 37.2358078, "longitude": -121.9623751 },
+    { "name": "Milpitas", "latitude": 37.4323341, "longitude": -121.8995741 },
+    {
+      "name": "Monte Sereno",
+      "latitude": 37.23633299999999,
+      "longitude": -121.992458
+    },
+    {
+      "name": "Morgan Hill",
+      "latitude": 37.1305012,
+      "longitude": -121.6543901
+    },
+    {
+      "name": "Mountain View",
+      "latitude": 37.3860517,
+      "longitude": -122.0838511
+    },
+    { "name": "Palo Alto", "latitude": 37.4418834, "longitude": -122.1430195 },
+    { "name": "San Jose", "latitude": 37.33874, "longitude": -121.8852525 },
+    {
+      "name": "Santa Clara",
+      "latitude": 37.3541079,
+      "longitude": -121.9552356
+    },
+    {
+      "name": "Saratoga",
+      "latitude": 43.0324245,
+      "longitude": -73.93598209999999
+    },
+    { "name": "Sunnyvale", "latitude": 37.36883, "longitude": -122.0363496 },
+    {
+      "name": "Unincorporated Santa Clara",
+      "latitude": 37.3541079,
+      "longitude": -121.9552356
+    },
+    { "name": "Benicia", "latitude": 38.049365, "longitude": -122.1585777 },
+    { "name": "Dixon", "latitude": 38.4454641, "longitude": -121.8232958 },
+    { "name": "Fairfield", "latitude": 41.1408363, "longitude": -73.2612615 },
+    { "name": "Rio Vista", "latitude": 38.1557502, "longitude": -121.6913439 },
+    { "name": "Suisun City", "latitude": 38.2382474, "longitude": -122.040244 },
+    { "name": "Vacaville", "latitude": 38.3565773, "longitude": -121.9877444 },
+    { "name": "Vallejo", "latitude": 38.1040864, "longitude": -122.2566367 },
+    { "name": "Cloverdale", "latitude": 39.5147682, "longitude": -86.7938968 },
+    { "name": "Cotati", "latitude": 38.3293416, "longitude": -122.7096666 },
+    { "name": "Healdsburg", "latitude": 38.6104658, "longitude": -122.8691609 },
+    { "name": "Petaluma", "latitude": 38.232417, "longitude": -122.6366524 },
+    {
+      "name": "Rohnert Park",
+      "latitude": 38.3396367,
+      "longitude": -122.7010984
+    },
+    { "name": "Santa Rosa", "latitude": 38.440429, "longitude": -122.7140548 },
+    { "name": "Sebastopol", "latitude": 38.4021359, "longitude": -122.8238806 },
+    { "name": "Sonoma", "latitude": 38.291859, "longitude": -122.4580356 },
+    {
+      "name": "Unincorporated Sonoma",
+      "latitude": 38.291859,
+      "longitude": -122.4580356
+    },
+    {
+      "name": "American Canyon",
+      "latitude": 38.1749178,
+      "longitude": -122.2608044
+    }
+  ]
+}

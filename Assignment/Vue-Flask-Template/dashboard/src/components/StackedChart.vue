@@ -43,7 +43,6 @@ export default {
         onResize() {
             let target = this.$refs.parallelContainer as HTMLElement
 
-            console.log('resize: ', target.clientWidth)
             if (target === undefined || target === null) return;
             this.store.size = { width: target.clientWidth, height: target.clientHeight };
         },
@@ -51,18 +50,13 @@ export default {
 
         async initChart() {
 
-            console.log('otherstore.size: ', this.store.size)
             let svg = d3.select('#stacked-svg')
                 .attr('width', this.store.size.width + this.store.margin.left + this.store.margin.right)
                 .attr('height', this.store.size.height + this.store.margin.top + this.store.margin.bottom)
                 .append("g")
                 .attr("transform", `translate(${this.store.margin.left}, ${-this.store.margin.bottom})`);
 
-            console.log('this.store.margin: ', this.store.margin)
-            console.log('this.store.size: ', this.store.size)
 
-
-            console.log('idk: ', this.store.size.width + this.store.margin.left + this.store.margin.right)
 
             // const svg = d3.select("#myviz")
             //     .append("g")
@@ -74,15 +68,31 @@ export default {
             //         `translate(${this.store.margin.left}, ${this.store.margin.top})`);
 
             // let csv = await axios.get(`${server}/fetchRents`);
-            // console.log('data: ', this.store.housing)
             let data: any[] = d3.csvParse(this.store.housing);
             // let data: DataPoint[] = d3.csvParse(csv.data);
 
             const keys = data.columns.slice(1);
 
+
+            const test = () => {
+                let extent = 
+            d3.extent(data, function (d: DataPoint) { 
+                    
+                    console.log('d.year: ', d.year)
+                    return d.year; })
+
+                    console.log('extent: ', parseInt(extent[1]) + 1)
+
+                    console.log(getMax(data))
+            }
+            test()
+
             const x = d3.scaleLinear()
-                .domain(d3.extent(data, function (d: DataPoint) { return d.year; }))
-                .range([0, this.store.size.width]);
+                .domain(d3.extent(data, function (d: DataPoint) { 
+                    
+                    // console.log('d.year: ', d.year)
+                    return d.year; }))
+                .range([this.store.margin.left, this.store.size.width - this.store.margin.right]);
 
             svg.append("g")
                 .attr("transform", `translate(0, ${this.store.size.height})`)
@@ -91,7 +101,7 @@ export default {
 
             svg.append("text")
                 .attr("text-anchor", "end")
-                .attr("x", this.store.size.width / 2)
+                .attr("x", (this.store.size.width  + this.store.margin.left ) / 2)
                 .attr("y", this.store.size.height + this.store.margin.bottom - 3)
                 .text("Year");
             var maxValue = d3.max(data, function (d) {
@@ -100,7 +110,6 @@ export default {
                 return d3.max(values.map(Number));
             });
 
-            console.log(maxValue);
 
 
             function getMax(data: any) {
@@ -110,7 +119,6 @@ export default {
                     return currentRowSum > maxRowSum ? currentRow : maxRow;
                 });
                 let maxValue = d3.sum(Object.values(maxRow).map(Number));
-                console.log('Maxrow: ', maxValue);
                 return maxValue;
             }
 
@@ -122,7 +130,6 @@ export default {
                     return currentRowSum > maxRowSum ? currentRow : maxRow;
                 });
                 let maxValue = d3.sum(Object.values(maxRow).map(Number));
-                console.log('Maxrow: ', maxValue);
                 return maxValue;
             }
 
@@ -130,15 +137,17 @@ export default {
 
 
             const y = d3.scaleLinear()
-                .domain([0, getMax(data) * 1.25])
-                .range([this.store.size.height, 0]);
+                .domain([0, getMax(data)])
+                .range([this.store.size.height, this.store.margin.top]);
+
             svg.append("g")
-                .call(d3.axisLeft(y));
+                .call(d3.axisLeft(y))
+                .attr("transform", `translate(${this.store.margin.left}, 0)`);
 
             svg.append("text")
                 .attr("text-anchor", "end")
-                .attr("x", -this.store.size.height / 2 + this.store.margin.bottom + this.store.margin.top)
-                .attr("y", - (this.store.margin.right + 40))
+                .attr("x", -this.store.size.height / 2 + (this.store.margin.bottom))
+                .attr("y", (this.store.margin.left) - 75)
                 .attr("dx", "-.8em")
                 .attr("dy", ".15em")
                 .attr("transform", "rotate(-90)")
@@ -170,7 +179,6 @@ export default {
             const brush = d3.brushX()                 // Add the brush feature using the d3.brush function
                 .extent([[0, 0], [this.store.size.width, this.store.size.height]])
                 .on("end", function (event, d) {
-                    console.log('brush: ', event, d)
 
                 }) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
             // .on("end", updateChart) // Each time the brush selection changes, trigger the 'updateChart' function
@@ -189,11 +197,9 @@ export default {
                 .join("path")
 
                 .attr("class", function (d) {
-                    console.log('replace: ', d.key.replaceAll(' ', ''))
                     return "myArea " + d.key.replaceAll(' ', '')
                 })
                 .style("fill", function (d) {
-                    console.log('d: ', d)
                     return color(d.key);
                 })
                 .attr("d", d3.area()
@@ -203,7 +209,6 @@ export default {
                 )
 
                 .on("mouseover", function (event, d) {
-                    console.log('mouseover: ', d)
    
                     highlight(d.key.replaceAll(' ', ''))
                     tooltip.html(
@@ -251,7 +256,6 @@ export default {
 
             // What to do when one group is hovered
             var highlight = function (d: any) {
-                console.log('highlight: ', d)
                 // reduce opacity of all groups
                 d3.selectAll(".myArea").style("opacity", .25)
                 // expect the one that is hovered
@@ -309,7 +313,9 @@ export default {
     height: 100%;
     flex-direction: column;
     flex-wrap: center;
-    width: 100%
+    width: 100%;
+
+    border: 1px solid black; /* adds a 1px black border */
 }
 
 
