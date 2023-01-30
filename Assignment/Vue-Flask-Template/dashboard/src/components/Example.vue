@@ -36,6 +36,7 @@ export default {
             .then(resp => { // check out the app.py in ./server/ to see the format
                 this.points = resp.data.data; 
                 this.clusters = resp.data.clusters;
+                console.log(resp.data)
                 return true;
             })
             .catch(error => console.log(error));

@@ -1,0 +1,181 @@
+<script lang="ts">
+import * as d3 from "d3";
+import axios from 'axios';
+import { isEmpty, debounce } from 'lodash';
+import { server } from '../helper';
+
+import { Point, ComponentSize, Margin } from '../types';
+// A "extends" B means A inherits the properties and methods from B.
+interface ScatterPoint extends Point{ 
+    cluster: string;
+}
+
+export default {
+    data() {
+        // Here we define the local states of this component. If you think the component as a class, then these are like its private variables.
+        return {
+            points: [] as ScatterPoint[], // "as <Type>" is a TypeScript expression to indicate what data structures this variable is supposed to store.
+            clusters: [] as string[],
+            size: { width: 0, height: 0 } as ComponentSize,
+            margin: {left: 40, right: 20, top: 25, bottom: 60} as Margin,
+        }
+    },
+    computed: {
+        rerender() {
+            return this.size;
+        }
+    },
+    methods: {
+        onResize() {  // record the updated size of the target element
+            let target = this.$refs.lineContainer as HTMLElement
+            if (target === undefined) return;
+            this.size = { width: target.clientWidth - 80, height: target.clientHeight - 100 };
+        },
+        async initChart() {
+            // append the svg object to the body of the page
+            var svg = d3.select("#line-svg")
+            .append("svg")
+                .attr("width", this.size.width + this.margin.left + this.margin.right)
+                .attr("height", this.size.height + this.margin.top + this.margin.bottom)
+            .append("g")
+                .attr("transform",
+                    "translate(" + (this.margin.left + 10) + "," + (this.margin.top) + ")");
+
+            //Read the data
+            let data = await d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_connectedscatter.csv")
+            console.log(data)
+
+            // List of groups (here I have one group per column)
+            var allGroup = ["valueA", "valueB", "valueC"]
+
+            // add the options to the button
+            d3.select("#selectButton")
+            .selectAll('myOptions')
+                .data(allGroup)
+            .enter()
+                .append('option')
+            .text(function (d) { return d; }) // text showed in the menu
+            .attr("value", function (d) { return d; }) // corresponding value returned by the button
+
+            // Add X axis --> it is a date format
+            var x = d3.scaleLinear()
+            .domain([0,10])
+            .range([ 0, this.size.width ]);
+            svg.append("g")
+            .attr("transform", "translate(0," + this.size.height + ")")
+            .call(d3.axisBottom(x));
+
+            // Add Y axis
+            var y = d3.scaleLinear()
+            .domain( [0,20])
+            .range([ this.size.height, 0 ]);
+            svg.append("g")
+            .call(d3.axisLeft(y));
+
+            // Initialize line with group a
+            var line = svg
+            .append('g')
+            .append("path")
+                .datum(data)
+                .attr("d", d3.line()
+                .x(function(d) { return x(+d.time) })
+                .y(function(d) { return y(+d.valueA) })
+                )
+                .attr("stroke", "black")
+                .style("stroke-width", 4)
+                .style("fill", "none")
+
+            // Initialize dots with group a
+            var dot = svg
+            .selectAll('circle')
+            .data(data)
+            .enter()
+            .append('circle')
+                .attr("cx", function(d) { return x(+d.time) })
+                .attr("cy", function(d) { return y(+d.valueA) })
+                .attr("r", 7)
+                .style("fill", "#69b3a2")
+
+
+            // A function that update the chart
+            function update(selectedGroup) {
+
+            // Create new data with the selection?
+            var dataFilter = data.map(function(d){return {time: d.time, value:d[selectedGroup]} })
+
+            // Give these new data to update line
+            line
+                .datum(dataFilter)
+                .transition()
+                .duration(1000)
+                .attr("d", d3.line()
+                    .x(function(d) { return x(+d.time) })
+                    .y(function(d) { return y(+d.value) })
+                )
+            dot
+                .data(dataFilter)
+                .transition()
+                .duration(1000)
+                .attr("cx", function(d) { return x(+d.time) })
+                .attr("cy", function(d) { return y(+d.value) })
+            }
+
+            // When the button is changed, run the updateChart function
+            d3.select("#selectButton").on("change", function(d) {
+                // recover the option that has been chosen
+                var selectedOption = d3.select(this).property("value")
+                // run the updateChart function with this selected option
+                update(selectedOption)
+            })
+
+
+        }
+    },
+    watch: {
+        rerender(newSize) {
+            if (!isEmpty(newSize)) {
+                d3.select('#line-svg').selectAll('*').remove()
+                d3.select('#selectButton').selectAll('*').remove()
+                this.initChart()
+            }
+        }
+    },
+    // The following are general setup for resize events.
+    mounted() {
+        window.addEventListener('resize', debounce(this.onResize, 100)) 
+        this.onResize()
+    },
+    beforeDestroy() {
+       window.removeEventListener('resize', this.onResize)
+    }
+}
+</script>
+
+<!-- "ref" registers a reference to the HTML element so that we can access it via the reference in Vue.  -->
+<!-- We use flex to arrange the layout-->
+<template>
+    <!-- Initialize a select button -->
+    <select id="selectButton"></select>
+    <!-- This is where the graph will be -->
+    <div id="my_dataviz" ref="lineContainer" class="chart-container outer d-flex">
+        <svg id="line-svg" width="100%" height="100%">
+            <!-- all the visual elements we create in initChart() will be inserted here in DOM-->
+        </svg>
+    </div>
+</template>
+
+<style scoped>
+.chart-container{
+    height: 100%;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: 100%;
+}
+
+.outer{
+    display: flex;
+    justify-content: center;
+    align-items:center;
+    height: 500px;
+}
+</style>
