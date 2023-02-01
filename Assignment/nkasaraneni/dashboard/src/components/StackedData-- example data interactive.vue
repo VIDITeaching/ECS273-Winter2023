@@ -61,11 +61,11 @@ export default {
 
             // Add X axis label:
             svg.append("text")
+                .attr("class", "x label")
                 .attr("text-anchor", "end")
-                .attr("x", this.size.width)
-                .attr("y", this.size.height + 40)
-                .attr("transform", "translate(0," + this.size.height - 20 + ")")
-                .text("Time (year)");
+                .attr("x", width)
+                .attr("y", height - 6)
+                .text("income per capita, inflation-adjusted (dollars)");
 
             // Add Y axis label:
             svg.append("text")

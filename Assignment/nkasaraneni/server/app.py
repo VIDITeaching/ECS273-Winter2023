@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
-from controller import processStackedData
+from controller import processLineData, processParallelData
 import json 
 
 app = Flask(__name__)
@@ -12,20 +12,26 @@ def hello_world():
     return "<p>Testing</p>"
 
 
-@app.route("/fetchStackedData", methods=["GET", "POST"])
+@app.route("/fetchLineData", methods=["GET", "POST"])
 @cross_origin()
-def fetchStackedData():
+def fetchLineData():
     if request.method == "GET": # handling GET request
-        data, columns = processStackedData()
+        data, columns = processLineData()
         resp = jsonify(data=data, columns=columns)
         return resp
     else: # handling POST request, which is only effective when ExampleWithInteractions.vue is loaded
         pass
-    #     request_context = request.get_json() # JSON object
-    #     method = request_context['method']
-    #     points, cluster_names = processExample(method)
-    #     resp = jsonify(data=points, clusters=cluster_names)
-    #     return resp
+
+
+@app.route("/fetchParallelData", methods=["GET", "POST"])
+@cross_origin()
+def fetchParallelData():
+    if request.method == "GET": # handling GET request
+        data, columns = processParallelData()
+        resp = jsonify(data=data, columns=columns)
+        return resp
+    else: # handling POST request, which is only effective when ExampleWithInteractions.vue is loaded
+        pass
 
 
 if __name__ == "__main__":

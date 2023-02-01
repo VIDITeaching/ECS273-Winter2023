@@ -1,5 +1,5 @@
 <script lang="ts">
-import { useLineStore } from '../stores/lineStore'
+import { useExampleStore } from '../stores/exampleStore'
 import { mapState } from 'pinia'
 import { watch, ref } from 'vue';
 

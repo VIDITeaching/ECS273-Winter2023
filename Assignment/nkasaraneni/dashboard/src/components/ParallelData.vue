@@ -4,26 +4,33 @@ import axios from 'axios';
 import { isEmpty, debounce } from 'lodash';
 import { server } from '../helper';
 
-import { Point, ComponentSize, Margin } from '../types';
-// A "extends" B means A inherits the properties and methods from B.
-interface ScatterPoint extends Point{ 
-    cluster: string;
-}
 
 export default {
     data() {
         // Here we define the local states of this component. If you think the component as a class, then these are like its private variables.
         return {
-            points: [] as ScatterPoint[], // "as <Type>" is a TypeScript expression to indicate what data structures this variable is supposed to store.
-            clusters: [] as string[],
+            data: [] as any,
+            columns: [] as string[],
             size: { width: 0, height: 0 } as ComponentSize,
-            margin: {left: 40, right: 20, top: 25, bottom: 60} as Margin,
+            margin: {left: 20, right: 20, top: 45, bottom: 20} as Margin,
         }
     },
     computed: {
         rerender() {
             return this.size;
         }
+    },
+    created() {
+        // fetch the data via API request when we init this component. This will only get called once.
+        // In axios anything we send back in the response are always bound to the "data" property.
+        axios.get(`${server}/fetchParallelData`)
+            .then(resp => { // check out the app.py in ./server/ to see the format
+                this.data = resp.data.data; 
+                this.columns = resp.data.columns;
+                this.initChart();
+                return true;
+            })
+            .catch(error => console.log(error));
     },
     methods: {
         onResize() {  // record the updated size of the target element
@@ -32,7 +39,7 @@ export default {
             this.size = { width: target.clientWidth - 80, height: target.clientHeight - 100 };
             this.initChart();
         },
-        async initChart() {
+        initChart() {
             // append the svg object to the body of the page
             var svg = d3.select("#parallel-svg")
             .append("svg")
@@ -41,26 +48,32 @@ export default {
             .append("g")
                 .attr("transform",
                     "translate(" + (this.margin.left + 10) + "," + (this.margin.top) + ")");
+            
+            // make title
+            svg.append("text")
+                .attr("x", (this.size.width / 2))             
+                .attr("y", - (this.margin.top / 2) - 7)
+                .attr("text-anchor", "middle")  
+                .style("font-size", "18px") 
+                .text("Parallel Coordinates for Beijing Atmospheric Data");
 
-            // Parse the Data
-            let data = await d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/iris.csv")
-            console.log(data)
             // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
-            let dimensions = Object.keys(data[0]).filter(function(d) { return d != "Species" })
+            let data : any[] = this.data
+            let dimensions : any[] = this.columns
 
             // For each dimension, I build a linear scale. I store all in a y object
             const y = {}
             for (var i in dimensions) {
                 let dim = dimensions[i]
                 y[dim] = d3.scaleLinear()
-                    .domain( d3.extent(data, function(d) { return +d[dim]; }) )
-                    .range([this.size.height, 0])
+                    .domain( d3.extent(data.map(d => d[dim])) )
+                    .range([this.size.height - 25, 0])
             }
 
             // Build the X scale -> it find the best position for each Y axis
             var x = d3.scalePoint()
             .range([0, this.size.width])
-            .padding(1)
+            .padding(0.25)
             .domain(dimensions);
 
             // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
@@ -118,11 +131,10 @@ export default {
 <!-- "ref" registers a reference to the HTML element so that we can access it via the reference in Vue.  -->
 <!-- We use flex to arrange the layout-->
 <template>
-    <h1>Testing</h1>
     <!-- Initialize a select button -->
     <select id="selectButton"></select>
     <!-- This is where the graph will be -->
-    <div id="my_dataviz" ref="parallelContainer" class="chart-container outer d-flex">
+    <div id="parallel_dataviz" ref="parallelContainer" class="chart-container outer d-flex">
         <svg id="parallel-svg" width="100%" height="100%">
             <!-- all the visual elements we create in initChart() will be inserted here in DOM-->
         </svg>
