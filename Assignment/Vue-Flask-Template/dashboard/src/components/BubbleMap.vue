@@ -134,20 +134,37 @@ export default {
                 // console.log('fetchhouse: ', this.store.housing)
 
             // console.log('fetchCities: ', this.citiesStore.citiesData)
-            let cityData = JSON.parse(JSON.stringify(this.citiesStore.citiesData.cities))
+            let cityData = JSON.parse(JSON.stringify(this.citiesStore.citiesData))
             let housingData: any[] = d3.csvParse(this.store.housing);
 
             // let cityData: any[] = d3.json(this.citiesStore);
             // console.log('city data: ', cityData);
+            // let keys;
+            // if (cityData.cities && Array.isArray(cityData.cities)) {
+            // keys = cityData.cities.reduce((counties, city) => {
+            //         counties.add(city.county);
+            //         return counties;
+            //         }, new Set());
+            //     }
 
-            const keys = housingData.columns.slice(1);
-            console.log('keys: ', keys)
+                let keys: any[] | Iterable<string> = [];
+                    if (cityData.cities && Array.isArray(cityData.cities)) {
+                        cityData.cities.forEach((city: any) => {
+                        if (!keys.includes(city.county)) {
+                            keys.push(city.county);
+                        }
+                    });
+                    } else {
+                    console.error("Cities must be defined and be an array.");
+                    }
+
+                console.log('keys ba: ', keys)
             // Load external data and boot
             // let data = await d3.json("https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json")
             let data = await d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/countries/us-states/CA-06-california-counties.json")
             // .then(function (data) {
 
-                console.log('cities: ', cityData)
+                // console.log('cities: ', cityData)
 
             let radius = d3.scaleSqrt([0, d3.max( JSON.parse(JSON.stringify(this.citiesStore.citiesData.cities)), d => {
             return d.totalproduction})], [0, 2 * Math.SQRT2])
@@ -156,14 +173,17 @@ export default {
             
                 .domain(keys)
                 .range(d3.schemeTableau10)
-
-            const makeMarkers = (cityData, housingData) => {
-                console.log('cityData: ', cityData)
+                
+                console.log('cd: ', cityData)
+            const makeMarkers = (cityData: any, housingData: any[]) => {
+                console.log('cityData type: ', typeof cityData.cities)
                 let markers = [];
+                
                 for (let city of cityData) {
-                    if (city.year === "2010") {
+                    console.log('city: ', city.year)
+                    if (city.year === "1990") {
                         // console.log(radius(10000))
-                        console.log('city: ', cityData)
+                        console.log('city: in 2010', city)
                             // console.log('city: ', city)
                         let marker = {
                             long: city.longitude,
@@ -182,7 +202,7 @@ export default {
                 return markers;
             }
 
-            const markers = makeMarkers(cityData, housingData);
+            const markers = makeMarkers(cityData.cities, housingData);
 
 
             // console.log('housing data: ', housingData)
@@ -277,7 +297,7 @@ svg.append("path")
 
 
 
-            // Create the bubbles
+            // Create the bubbles put back in later
             svg.selectAll('circle')
                 .data(markers)
                 .enter()
@@ -309,7 +329,7 @@ svg.append("path")
                     return d.r
                 })
                 .attr('fill', d => d.color);
-
+                        /// Put back in later
 
 var zoom = d3.zoom()
       .scaleExtent([1, 8])

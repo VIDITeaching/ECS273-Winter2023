@@ -13,7 +13,7 @@ export const useHousingStore = defineStore('housingInteractions', {
 
         points: [] as ScatterPoint[],
         clusters: [] as string[],
-        housing: [],
+        housing: '' as string,
         size: { width: 0, height: 0 } as ComponentSize,
         margin: { left: 75, right: 50, top: 100, bottom: 50 } as Margin,
         methods: ['PCA', 't-SNE'] as string[],

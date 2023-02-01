@@ -24,7 +24,7 @@ export const useCitiesStore = defineStore('cityStore', {
         async fetchCities() { // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
             axios.get(`${server}/fetchCitiesWithCoords`)
                 .then(resp => {
-                    console.log('resp.city: ', resp.data)
+                    // console.log('resp.city: ', resp.data)
                     this.citiesData = resp.data;
                     return true;
                 })

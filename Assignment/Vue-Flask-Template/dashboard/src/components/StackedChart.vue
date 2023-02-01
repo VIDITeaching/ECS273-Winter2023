@@ -48,8 +48,7 @@ export default {
         },
 
 
-        async initChart() {
-
+        initChart() {
             let svg = d3.select('#stacked-svg')
                 .attr('width', this.store.size.width + this.store.margin.left + this.store.margin.right)
                 .attr('height', this.store.size.height + this.store.margin.top + this.store.margin.bottom)
@@ -68,17 +67,22 @@ export default {
             //         `translate(${this.store.margin.left}, ${this.store.margin.top})`);
 
             // let csv = await axios.get(`${server}/fetchRents`);
+            // var fixedCsv = this.store.housing.replace(/\r/g, "\n");
             let data: any[] = d3.csvParse(this.store.housing);
             // let data: DataPoint[] = d3.csvParse(csv.data);
 
             const keys = data.columns.slice(1);
+            // console.log('keyeyeys: ', keys)
+            console.log('cols: ', data.columns)
 
+            console.log('colsslice: ', data.columns.slice(1))
+            console.log('typerof: ', typeof data)
 
             const test = () => {
                 let extent = 
             d3.extent(data, function (d: DataPoint) { 
                     
-                    console.log('d.year: ', d.year)
+                    // console.log('d.year: ', d.year)
                     return d.year; })
 
                     console.log('extent: ', parseInt(extent[1]) + 1)
@@ -113,6 +117,7 @@ export default {
 
 
             function getMax(data: any) {
+                if (data.length === 0) return 0;
                 let maxRow = data.reduce((maxRow: any, currentRow: any) => {
                     let currentRowSum = d3.sum(Object.values(currentRow).map(Number));
                     let maxRowSum = d3.sum(Object.values(maxRow).map(Number));
@@ -276,7 +281,10 @@ export default {
 
             d3.select('#stacked-svg').selectAll('*').remove() // Clean all the elements in the chart
             // d3.select('#my_dataviz').selectAll('*').remove()
-            this.initChart()
+            
+                this.initChart()
+            
+            
         }
     },
     mounted() {
@@ -294,7 +302,7 @@ export default {
                 this.rerender()
             }
         },
-        'store.housing'(data) { // when data changes
+        'store.housing'(data: string) { // when data changes
             if (!isEmpty(data)) {
                 this.rerender()
             }
