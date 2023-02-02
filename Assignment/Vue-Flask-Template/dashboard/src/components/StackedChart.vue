@@ -16,7 +16,7 @@ import { mapState, storeToRefs } from 'pinia';
 import { useHousingStore } from '../stores/housingStore';
 import { isEmpty, debounce } from 'lodash';
 import { server } from '../helper';
-
+import { getColors } from '../helpers/colors';
 interface DataPoint {
     year: number;
     [key: string]: number;
@@ -55,46 +55,22 @@ export default {
                 .append("g")
                 .attr("transform", `translate(${this.store.margin.left}, ${-this.store.margin.bottom})`);
 
-
-
-            // const svg = d3.select("#myviz")
-            //     .append("g")
-
-            //     .attr("width", this.store.size.width + this.store.margin.left + this.store.margin.right)
-            //     .attr("height", this.store.size.height + this.store.margin.top + this.store.margin.bottom)
-            //     .append("g")
-            //     .attr("transform",
-            //         `translate(${this.store.margin.left}, ${this.store.margin.top})`);
-
-            // let csv = await axios.get(`${server}/fetchRents`);
-            // var fixedCsv = this.store.housing.replace(/\r/g, "\n");
             let data: any[] = d3.csvParse(this.store.housing);
-            // let data: DataPoint[] = d3.csvParse(csv.data);
 
             const keys = data.columns.slice(1);
-            // console.log('keyeyeys: ', keys)
-            console.log('cols: ', data.columns)
-
-            console.log('colsslice: ', data.columns.slice(1))
-            console.log('typerof: ', typeof data)
 
             const test = () => {
                 let extent = 
             d3.extent(data, function (d: DataPoint) { 
                     
-                    // console.log('d.year: ', d.year)
                     return d.year; })
 
-                    console.log('extent: ', parseInt(extent[1]) + 1)
-
-                    console.log(getMax(data))
             }
             test()
 
             const x = d3.scaleLinear()
                 .domain(d3.extent(data, function (d: DataPoint) { 
                     
-                    // console.log('d.year: ', d.year)
                     return d.year; }))
                 .range([this.store.margin.left, this.store.size.width - this.store.margin.right]);
 
@@ -158,10 +134,9 @@ export default {
                 .attr("transform", "rotate(-90)")
                 .text("New Housing Production")
 
-            const color = d3.scaleOrdinal(d3.schemeCategory10)
+            const color =  getColors(keys);
             
-                .domain(keys)
-                .range(d3.schemeTableau10)
+
 
             const stackedData = d3.stack()
             // .offset(d3.stackOffsetSilhouette)
@@ -263,15 +238,25 @@ export default {
             var highlight = function (d: any) {
                 // reduce opacity of all groups
                 d3.selectAll(".myArea").style("opacity", .25)
+
+                d3.selectAll(".bubble").style("opacity", .01)
+
+                // console.log('bubble selected: ', '.bubble.', d)
+
+                // console.log('myArea selected: ', '.myArea.', d)
                 // expect the one that is hovered
-                d3.select("." + d)
-                .style("stroke", "black").style("opacity", 1)
+                d3.selectAll(".bubble." + d)
+                    .style("opacity", 1)
+                d3.select(".myArea." + d)
+                    .style("stroke", "black").style("opacity", 1)
 
             }
 
             // And when it is not hovered anymore
             var noHighlight = function (d: any) {
                 d3.selectAll(".myArea").style("opacity", 1).style("stroke", "none")
+
+                d3.selectAll(".bubble").style("opacity", 1)
             }
 
 

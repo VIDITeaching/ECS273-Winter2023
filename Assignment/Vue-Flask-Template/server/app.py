@@ -88,11 +88,20 @@ def fetchRents():
 @cross_origin()
 def fetchCitiesWithCoords():
     SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
-    json_url = os.path.join(SITE_ROOT, "data/citiesWithCoords.json")
+    json_url = os.path.join(SITE_ROOT, "data/citiesWithCoords2.json")
     with open(json_url) as json_file:
         data = json.load(json_file)
     return jsonify(data)
 
+
+@app.route("/fetchMap", methods=["GET", "POST"])
+@cross_origin()
+def fetchMap():
+    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+    json_url = os.path.join(SITE_ROOT, "data/map/states-albers-10m.json")
+    with open(json_url) as json_file:
+        data = json.load(json_file)
+    return jsonify(data)
 
 
 @app.route("/fun", methods=["GET", "POST"])

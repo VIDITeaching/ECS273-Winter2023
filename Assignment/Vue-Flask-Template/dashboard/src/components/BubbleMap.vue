@@ -8,7 +8,9 @@ import { Point } from '../types';
 import { mapState, storeToRefs } from 'pinia';
 import { useHousingStore } from '../stores/housingStore';
 import { useCitiesStore } from '../stores/citiesStore'
+import { useMapStore } from '../stores/mapStore'
 import { server } from '../helper';
+import { getColors } from "../helpers/colors";
 interface ScatterPoint extends Point {
     cluster: string;
 }
@@ -38,62 +40,25 @@ export default {
         const store = useHousingStore();
         const citiesStore = useCitiesStore();
         const { resize } = storeToRefs(store);
-        const countyCoordinates = {
-            "Alameda County": {
-                "latitude": 37.668819,
-                "longitude": -121.777915
-            },
-            "Marin County": {
-                "latitude": 38.107419,
-                "longitude": -122.569709
-            },
-            "Santa Clara County": {
-                "latitude": 37.354130,
-                "longitude": -121.955236
-            },
-            "Napa County": {
-                "latitude": 38.297538,
-                "longitude": -122.286865
-            },
-            "Contra Costa County": {
-                "latitude": 37.917934,
-                "longitude": -121.739659
-            },
-            "San Mateo County": {
-                "latitude": 37.562992,
-                "longitude": -122.325525
-            },
-            "San Francisco County": {
-                "latitude": 37.774929,
-                "longitude": -122.419416
-            },
-            "Sonoma County": {
-                "latitude": 38.291859,
-                "longitude": -122.458036
-            },
-            "Solano County": {
-                "latitude": 38.249358,
-                "longitude": -121.939983
-            }
-        };
+        const mapStore = useMapStore();
 
 
         return {
-            countyCoordinates,
             store,
             citiesStore,
-            resize
+            resize,
+            mapStore
         }
     },
     computed: {
         ...mapState(useHousingStore, ['selectedMethod']),
-
+        ...mapState(useMapStore, []),
         ...mapState(useCitiesStore, ['citiesData'])
     },
 
-    created() {
+    async created() {
         this.store.fetchHousing(this.selectedMethod);
-
+        await this.mapStore.fetchMap();
         this.citiesStore.fetchCities();
     },
     methods: {
@@ -104,242 +69,252 @@ export default {
             if (target === undefined || target === null) return;
             this.citiesStore.size = { width: target.clientWidth, height: target.clientHeight };
         },
-        async initChart() {
+        initChart() {
 
+            let tooltip = d3
+                .select('body')
+                .append('div')
+                .attr('class', 'd3-tooltip')
+                .style('position', 'absolute')
+                .style('z-index', '10')
+                .style('visibility', 'hidden')
+                .style('padding', '10px')
+                .style('background', 'rgba(0,0,0,0.6)')
+                .style('border-radius', '4px')
+                .style('color', '#fff')
+                .text('a simple tooltip');
 
-            // console.log('mesh: ', mesh(us, us.objects.states))
-            // Create data for circles:
-            // Create data for circles:
-            // const markers = [
-            //     { long: -122.4194, lat: 37.7749 }, // SF
-            // ];
+            if (!this.citiesData.cities) return false
 
+            if (!this.mapStore.map.objects) return false
 
-            // Map and projection
-            const projection = d3.geoAlbers()
-            // .fitWidth(0, this.citiesStore.size.width - 100)
-            // .fitHeight(this.citiesStore.margin.bottom, this.citiesStore.size.height - this.citiesStore.margin.top)
-                .translate([0, 0])
-                // .rotate([90,0])
-                .scale(12000)
-                // .rotate([0, -40])  // rotate around longitude -120, latitude -40
-    .center([-28, 39])
-    .parallels([35, -30])
-    // .scale(6000)
-
-                // var projection = d3.geoAlbersUsa()
-                // .scale(1000)
-                // .translate([(this.citiesStore.size.width + this.citiesStore.margin.left + this.citiesStore.margin.right) / 2, (this.citiesStore.size.height + this.citiesStore.margin.top + this.citiesStore.margin.bottom) / 2]);
-
-                // console.log('fetchhouse: ', this.store.housing)
-
-            // console.log('fetchCities: ', this.citiesStore.citiesData)
             let cityData = JSON.parse(JSON.stringify(this.citiesStore.citiesData))
+
+
+            if (cityData.cities) {
+                cityData.cities.sort((b, a) => b.totalproduction - a.totalproduction);
+            }
             let housingData: any[] = d3.csvParse(this.store.housing);
 
-            // let cityData: any[] = d3.json(this.citiesStore);
-            // console.log('city data: ', cityData);
-            // let keys;
-            // if (cityData.cities && Array.isArray(cityData.cities)) {
-            // keys = cityData.cities.reduce((counties, city) => {
-            //         counties.add(city.county);
-            //         return counties;
-            //         }, new Set());
-            //     }
-
-                let keys: any[] | Iterable<string> = [];
-                    if (cityData.cities && Array.isArray(cityData.cities)) {
-                        cityData.cities.forEach((city: any) => {
-                        if (!keys.includes(city.county)) {
-                            keys.push(city.county);
-                        }
-                    });
-                    } else {
-                    console.error("Cities must be defined and be an array.");
+            let keys: any[] | Iterable<string> = [];
+            if (cityData.cities && Array.isArray(cityData.cities)) {
+                cityData.cities.forEach((city: any) => {
+                    if (!keys.includes(city.county)) {
+                        keys.push(city.county);
                     }
+                });
+            } else {
+                console.error("Cities must be defined and be an array.");
+            }
 
-                console.log('keys ba: ', keys)
-            // Load external data and boot
-            // let data = await d3.json("https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json")
-            let data = await d3.json("https://raw.githubusercontent.com/deldersveld/topojson/master/countries/us-states/CA-06-california-counties.json")
-            // .then(function (data) {
+            let radius = d3.scaleSqrt([0, d3.max(JSON.parse(JSON.stringify(this.citiesStore.citiesData.cities)), d => {
+                return d.totalproduction
+            })], [0, 7.5 * Math.SQRT2])
 
-                // console.log('cities: ', cityData)
 
-            let radius = d3.scaleSqrt([0, d3.max( JSON.parse(JSON.stringify(this.citiesStore.citiesData.cities)), d => {
-            return d.totalproduction})], [0, 2 * Math.SQRT2])
+            const color = getColors(keys);
 
-            const color = d3.scaleOrdinal(d3.schemeCategory10)
-            
-                .domain(keys)
-                .range(d3.schemeTableau10)
-                
-                console.log('cd: ', cityData)
             const makeMarkers = (cityData: any, housingData: any[]) => {
-                console.log('cityData type: ', typeof cityData.cities)
                 let markers = [];
-                
+
                 for (let city of cityData) {
-                    console.log('city: ', city.year)
-                    if (city.year === "1990") {
-                        // console.log(radius(10000))
-                        console.log('city: in 2010', city)
-                            // console.log('city: ', city)
-                        let marker = {
-                            long: city.longitude,
-                            lat: city.latitude,
-                            color: color(city.county),
-                            r: radius(city.totalproduction)
-                            // r: housingData[0][city.county] / 500
-                        }
+
+                    let marker = {
+                        long: city.longitude,
+                        lat: city.latitude,
+                        color: color(city.county),
+                        r: radius(city.totalproduction),
+                        opacity: 0.8,
+                        county: city.county,
+                        city: city.city,
+                        // r: housingData[0][city.county] / 500
+                    }
 
                     markers.push(marker);
 
-                    }
-                    
                 }
-                console.log('markers: ', markers)
                 return markers;
             }
 
             const markers = makeMarkers(cityData.cities, housingData);
 
 
-            // console.log('housing data: ', housingData)
 
-            
+            // if (!this.citiesData.cities) return false
+
+            // if (!this.mapStore.map.objects) return false
+
+            //US
+            let data = JSON.parse(JSON.stringify(this.mapStore.map));
+            console.log('data: ', data)
+
+
+
+            let zoom = d3.zoom()
+                .scaleExtent([1, 8])
+                // .translateExtent([[-500, -300], [1500, 1000]])
+                .on("zoom", e => {
+                    zoomed(e, this.citiesStore.size.width, this.citiesStore.size.height)
+                }
+                );
             // The svg
-            const svg = d3.select("svg")
-                .attr('width', (this.citiesStore.size.width))
-                .attr('height', (this.citiesStore.size.height))
-                // .append(g)
-
+            let svg = d3.select("svg")
+                .attr("viewBox", [0, 0, this.citiesStore.size.width, this.citiesStore.size.height])
+                .on("click", reset(this.citiesStore.size.width, this.citiesStore.size.height));
+            // End zoom
             var g = svg.append("g");
 
-                
-            // Create the geo path generator
+            const center = [122.4194, 37.7749];  // longitude and latitude of Bay Area center
+            const projection = d3.geoAlbers()
+                .rotate([center[0], 0, 0])
+                .center([0, center[1]])
+                .scale(15000)
+                .translate([this.citiesStore.size.width / 2, this.citiesStore.size.height / 2]);
+            // const pathGenerator = d3.geoPath().projection(projection);
+
+
             const path = d3.geoPath()
-                .projection(projection);
-
-            // Filter data
-            // data.features = data.features.filter(d => d.properties.name == "California")
-            const counties = topojson.feature(data, data.objects.cb_2015_california_county_20m);
-
-svg.append("path")
-  .datum(counties)
-  .attr("d", path)
-  .attr("class", "county")
-  .attr("fill", "none")
-      .attr("stroke", "#777")
-      .attr("stroke-width", 0.5)
-      .attr("stroke-linejoin", "round")
-      .attr("d", d3.geoPath()
-                    .projection(projection)
-                )
-    //   .attr("d", d3.geoPath());
-            // Draw the map
-            // svg
-            //     .selectAll("path")
-            //     .data(data.features)
-            //     .join("path")
-            //     .attr("fill", "#b8b8b8")
-            //     .attr("d", d3.geoPath()
-            //         .projection(projection)
-            //     )
-            //     .attr('cursor', 'pointer')
-            //     .style("stroke", "black")
-            //     .style("opacity", .3)
-            //     .on("click", function (event, d) {
-            //         console.log('event: ', event)
-
-            //         console.log('d: ', d)
-            //         let x;
-            //         let y;
-            //         let zoomLevel;
-
-            //         if (d && d.properties) {
-            //             const centroid = path.centroid(d);
-            //             x = centroid[0];
-            //             y = centroid[1];
-            //             zoomLevel = zoomSettings.zoomLevel;
-            //         } else {
-            //             x = (this.citiesStore.size.width + this.citiesStore.margin.left + this.citiesStore.margin.right) / 2;
-            //             y = (this.citiesStore.size.height + this.citiesStore.margin.top + this.citiesStore.margin.bottom) / 2;
-            //             zoomLevel = 1;
-            //         }
-            //     })
+            path.projection(projection)
 
 
-                let zoomSettings = {
-                    duration: 1000,
-                    ease: d3.easeCubicOut,
-                    zoomLevel: 4,
-                };
-
-                // function clicked(event, d) {
-
-                //     let x;
-                //     let y;
-                //     let zoomLevel;
-
-                //     if (d && d.properties) {
-                //         const centroid = path.centroid(d);
-                //         x = centroid[0];
-                //         y = centroid[1];
-                //         zoomLevel = zoomSettings.zoomLevel;
-                //     } else {
-                //         x = (this.citiesStore.size.width + this.citiesStore.margin.left + this.citiesStore.margin.right) / 2;
-                //         y = (this.citiesStore.size.height + this.citiesStore.margin.top + this.citiesStore.margin.bottom) / 2;
-                //         zoomLevel = 1;
-                //     }
-                // }
+            // US
+            console.log('idk: ', data)
+            console.log(data.objects)
+            console.log('coo')
 
 
+            // Filling the map
+            const states = g.append("g")
+                .attr("fill", "#EEE")
+                .attr("cursor", "pointer")
+                .selectAll("path")
+                .data(topojson.feature(data, data.objects.states).features)
+                .join("path")
+                .on("click", clicked(this.citiesStore.size.width, this.citiesStore.size.height))
+                .attr("d", path);
+
+            //
+            const counties = topojson.mesh(data, data.objects.counties);
+            const regions = g.append("path")
+                .attr("fill", "none")
+                .attr("stroke", "grey")
+                .attr("stroke-linejoin", "round")
+                .attr("d", path(topojson.mesh(data, data.objects.counties)))
 
 
-            // Create the bubbles put back in later
-            svg.selectAll('circle')
+            const latitude = 37.7749;
+            const longitude = -122.4194;
+
+
+            const markers2 = [
+                { long: -122.4194, lat: 37.7749 }, // SF
+            ];
+
+
+            let bubbles = g.selectAll('circle')
                 .data(markers)
                 .enter()
                 .append('circle')
-                .attr("d", d => d3.geoPath()
-                    .projection(projection)
+                .attr("d", d => d3.geoPath().projection(projection)
                 )
+
+                .attr("class", d => {
+                    return "bubble " + d.county.replaceAll(' ', '')
+                })
                 .attr("cx", d => {
-                    // console.log('d.long: ', d.long)
-                    // console.log('d.lat: ', d.lat)
-                    // console.log('projection: ', projection([d.long, d.lat]))
-                        if (projection([d.long, d.lat])) {
+                    if (projection([d.long, d.lat])) {
 
                         return projection([d.long, d.lat])[0]
-                        }
-                        else {
-                            console.log('projection([d.long, d.lat]): ', projection([d.long, d.lat]))
-                            console.log('d?: ', d)
-                        }
-                    })
+                    }
+                    else {
+                        console.log('projection([d.long, d.lat]): ', projection([d.long, d.lat]))
+                        console.log('d?: ', d)
+                    }
+                })
                 .attr("cy", d => {
                     if (projection([d.long, d.lat])) {
                         return projection([d.long, d.lat])[1]
                     }
-                    })
+                })
 
                 .attr('r', d => {
-                    // console.log('d.r: ', d)
-                    return d.r
+                    if (d.r > 0) {
+                        return d.r;
+                    }
+                    else {
+                        return 0;
+                    }
                 })
-                .attr('fill', d => d.color);
-                        /// Put back in later
+                .attr('fill', d => d.color)
+                .attr('opacity', d => d.opacity)
+                .on("mouseover", function (event, d) {
+                    tooltip.html(
+                        `<div>City: ${d.city}</div>`
+                    )
+                        .style('visibility', 'visible');
+                })
+                .on('mousemove', function (event, d) {
+                    tooltip
+                        .style('top', (event.pageY - 10) + 'px')
+                        .style('left', (event.pageX + 10) + 'px');
+                })
+                .on("mouseleave", function (event, d) {
+                    tooltip.html(``).style('visibility', 'hidden');
+                });
 
-var zoom = d3.zoom()
-      .scaleExtent([1, 8])
-      .on('zoom', function(event) {
-          g.selectAll('path')
-           .attr('transform', event.transform);
-});
+            svg.call(zoom);
+
+            function reset(states, width, height) {
+                if (typeof states !== 'Object') {
+                    return;
+                }
+                else {
+                    console.log('states: ', states)
+                    states.transition().style("fill", null);
+                    svg.transition().duration(750).call(
+                        zoom.transform,
+                        d3.zoomIdentity,
+                        d3.zoomTransform(svg.node()).invert([width / 2, height / 2])
+                    );
+                }
+
+            }
 
 
-            // });
+            function clicked(event, d, width, height) {
+                if (typeof event !== 'Object') return;
+                const [[x0, y0], [x1, y1]] = path.bounds(d);
+                event.stopPropagation();
+                states.transition().style("fill", null);
+                d3.select(this).transition().style("fill", "red");
+                svg.transition().duration(750).call(
+                    zoom.transform,
+                    d3.zoomIdentity
+                        .translate(width / 2, height / 2)
+                        .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)))
+                        .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
+                    d3.pointer(event, svg.node())
+                );
+            }
+
+            function zoomed(event) {
+                const { transform } = event;
+                g.attr("transform", transform);
+                g.attr("stroke-width", 1 / transform.k);
+
+                
+
+                bubbles.attr('r', d => {
+                    if (d.r > 0) {
+                        return d.r / transform.k
+                    }
+                    else {
+                        return 0;
+                    }
+                   });
+                // g.attr("path", path * transform.k);
+            }
+
         },
         initLegend() {
 
@@ -355,8 +330,8 @@ var zoom = d3.zoom()
 
 
         // let data = d3.json(`${server}/fetchCitiesWithCoords`)
-        
-    // this.data = data;
+
+        // this.data = data;
 
 
         window.addEventListener('resize', debounce(this.onResize, 100))
@@ -383,6 +358,11 @@ var zoom = d3.zoom()
                 this.rerender()
             }
         },
+        'mapStore.map'(data) { // when data changes
+            if (!isEmpty(data)) {
+                this.rerender()
+            }
+        },
         selectedMethod(newMethod) { // function triggered when a different method is selected via dropdown menu
             this.store.fetchHousing(newMethod)
         },
@@ -396,8 +376,8 @@ var zoom = d3.zoom()
     <!-- <div class="viz-container d-flex justify-end"> -->
 
     <!-- <div ref="parallelContainer" class="chart-container outer d-flex"> -->
-    <div id="chartcontainer" class="chart-container outer d-flex" ref="mapContainer">
-        <svg id="map-svg" width="100%" height="100%">
+    <div id="chartcontainer" class="chart-container" ref="mapContainer">
+        <svg id="map-svg">
         </svg>
     </div>
     <!-- </div> -->
@@ -413,7 +393,11 @@ var zoom = d3.zoom()
 .chart-container {
     height: 100%;
     width: calc(100% - 6rem);
-    border: 1px solid black; /* adds a 1px black border */
+    border: 1px solid black;
+    /* adds a 1px black border */
+    position: relative;
+
+    overflow: hidden;
 
 }
 

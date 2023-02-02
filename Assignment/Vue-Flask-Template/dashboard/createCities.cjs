@@ -28,6 +28,7 @@ const  run = async () => {
                     city.sfproduction = metro.sfproduction
                     city.mfproduction = metro.mfproduction
                     city.mhproduction = metro.mhproduction
+                    city.city = metro.city
                     newJson.cities.push({ ...city })
                 }
             }

@@ -26,6 +26,8 @@ export const useCitiesStore = defineStore('cityStore', {
                 .then(resp => {
                     // console.log('resp.city: ', resp.data)
                     this.citiesData = resp.data;
+                    
+
                     return true;
                 })
                 .catch(error => console.log(error));
