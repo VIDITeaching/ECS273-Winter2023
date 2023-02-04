@@ -11,7 +11,7 @@ interface ScatterPoint extends Point{
 export const useCitiesStore = defineStore('cityStore', {
     state: () => ({
         size: { width: 0, height: 0 } as ComponentSize,
-        margin: { left: 100, right: 100, top: 100, bottom: 50 } as Margin,
+        margin: { left: 100, right: 100, top: 50, bottom: 50 } as Margin,
         citiesData: [] 
 
     }),

@@ -50,6 +50,7 @@ export default {
 
         initChart() {
             let svg = d3.select('#stacked-svg')
+
                 .attr('width', this.store.size.width + this.store.margin.left + this.store.margin.right)
                 .attr('height', this.store.size.height + this.store.margin.top + this.store.margin.bottom)
                 .append("g")
@@ -60,18 +61,20 @@ export default {
             const keys = data.columns.slice(1);
 
             const test = () => {
-                let extent = 
-            d3.extent(data, function (d: DataPoint) { 
-                    
-                    return d.year; })
+                let extent =
+                    d3.extent(data, function (d: DataPoint) {
+
+                        return d.year;
+                    })
 
             }
             test()
 
             const x = d3.scaleLinear()
-                .domain(d3.extent(data, function (d: DataPoint) { 
-                    
-                    return d.year; }))
+                .domain(d3.extent(data, function (d: DataPoint) {
+
+                    return d.year;
+                }))
                 .range([this.store.margin.left, this.store.size.width - this.store.margin.right]);
 
             svg.append("g")
@@ -81,7 +84,7 @@ export default {
 
             svg.append("text")
                 .attr("text-anchor", "end")
-                .attr("x", (this.store.size.width  + this.store.margin.left ) / 2)
+                .attr("x", (this.store.size.width + this.store.margin.left) / 2)
                 .attr("y", this.store.size.height + this.store.margin.bottom - 3)
                 .text("Year");
             var maxValue = d3.max(data, function (d) {
@@ -104,16 +107,6 @@ export default {
             }
 
 
-            function getMin(data: any) {
-                let maxRow = data.reduce((maxRow: any, currentRow: any) => {
-                    let currentRowSum = d3.sum(Object.values(currentRow).map(Number));
-                    let maxRowSum = d3.sum(Object.values(maxRow).map(Number));
-                    return currentRowSum > maxRowSum ? currentRow : maxRow;
-                });
-                let maxValue = d3.sum(Object.values(maxRow).map(Number));
-                return maxValue;
-            }
-
 
 
 
@@ -122,6 +115,7 @@ export default {
                 .range([this.store.size.height, this.store.margin.top]);
 
             svg.append("g")
+            
                 .call(d3.axisLeft(y))
                 .attr("transform", `translate(${this.store.margin.left}, 0)`);
 
@@ -134,48 +128,132 @@ export default {
                 .attr("transform", "rotate(-90)")
                 .text("New Housing Production")
 
-            const color =  getColors(keys);
-            
+            const color = getColors(keys);
+
 
 
             const stackedData = d3.stack()
-            // .offset(d3.stackOffsetSilhouette)
+                // .offset(d3.stackOffsetSilhouette)
                 .keys(keys)
-                .value((d,key) => {
-                    return d[key] < 0 ? 0: d[key];
+                .value((d, key) => {
+
+                    if (d[key] < 0) {
+                        console.log('this is less than 0', d)
+                    }
+
+                    return d[key] < 0 ? 0 : d[key];
                 })(data)
-                
+
 
             // Add a clipPath: everything out of this area won't be drawn.
-            const clip = svg.append("defs").append("svg:clipPath")
-                .attr("id", "clip")
-                .append("svg:rect")
-                .attr("width", this.store.size.width )
-                .attr("height", this.store.size.height )
-                .attr("x", 0)
-                .attr("y", 0);
+            // const clip = svg.append("defs").append("svg:clipPath")
+            //     .attr("id", "clip")
+            //     .append("svg:rect")
+            //     .attr("width", this.store.size.width)
+            //     .attr("height", this.store.size.height)
+            //     .attr("x", 0)
+            //     .attr("y", 0);
 
             // Add brushing
             const brush = d3.brushX()                 // Add the brush feature using the d3.brush function
                 .extent([[0, 0], [this.store.size.width, this.store.size.height]])
+                .on("brush", (event, d) => { 
+                    
+                    if (event.selection.map(x.invert)[0] < 1990 || event.selection.map(x.invert)[1] >= 2018) {
+                        return;
+                    }
+                    else {
+                        brushed(event, d)
+                    }
+                    })
                 .on("end", function (event, d) {
 
                 }) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
             // .on("end", updateChart) // Each time the brush selection changes, trigger the 'updateChart' function
-
+            
             // Create the scatter variable: where both the circles and the brush take place
-            const areaChart = svg.attr("class", "brush")
-                //   
-                .append('g')
-                .call(brush)
-                .attr("clip-path", "url(#clip)")
+            
 
-            areaChart
+                function mouseEvent(e, d, marginTop, marginBottom, height) {
+                    // console.log('movemouse')
+                    let [xCoordinate] = d3.pointer( e);
+                    // use a bisector to find the closest year on the x-axis
+                    let year = x.invert(xCoordinate);
+                    year = Math.round(year);
+
+                    if (year > 2018 || year < 1990) {
+                        return;
+                    }
+                    
+                    // bisectorRect
+                    // .attr("x", x(year)-1)
+                    // .attr("y", marginTop)
+                    // .attr("width", 2)
+                    // .attr("height", height - (marginTop ))
+
+                    // update the position of the bisector line
+                    // bisectorLine
+                    // .attr("x1", x(year))// x(year))
+                    // .attr("x2", x(year))
+                    // .attr("y1", 100)
+                    // .attr("y2", 500)
+                    // .style("display", "block");
+                    
+                
+                }
+            function brushed(event, d) {
+                // let interval = d3.timeYear.every(1)
+
+                if (!event.sourceEvent ) return; // Only transition after input.
+
+                const d0 = event.selection.map(x.invert);
+                
+                let lower = Math.round(d0[0])
+                let upper = Math.round(d0[1])
+                // d1 = Math.round(d0)
+                console.log('d1', d0)
+                console.log('lower', lower)
+                console.log('upper', upper)
+                if (lower >= upper) {
+                    lower = Math.floor(d0[0])
+                    upper = Math.ceil(d0[1])
+                }
+                d3.select(".brush")
+                .call(brush.move, [x(lower), x(upper)]);
+                
+            }
+
+            function brushended() {
+                console.log('brushended')
+                // your code here to handle the brushed year range
+            }
+
+            
+
+            // Add a clipPath: everything out of this area won't be drawn.
+    const clip = svg.append("defs").append("svg:clipPath")
+        .attr("id", "clip")
+        .append("svg:rect")
+        .attr("width", this.store.size.width - (this.store.margin.right + this.store.margin.left) )
+        .attr("height", this.store.size.height  )
+        .attr("transform", "translate(" + this.store.margin.left + ",0)")
+        .attr("x", 0)
+        .attr("y", 0);
+
+
+        
+
+            
+            const areaChart = svg.append('g')
+                
+                .attr("clip-path", "url(#clip)");
+
+
+                areaChart
                 .selectAll("mylayers")
 
                 .data(stackedData)
                 .join("path")
-
                 .attr("class", function (d) {
                     return "myArea " + d.key.replaceAll(' ', '')
                 })
@@ -189,7 +267,7 @@ export default {
                 )
 
                 .on("mouseover", function (event, d) {
-   
+
                     highlight(d.key.replaceAll(' ', ''))
                     tooltip.html(
                         `<div>County: ${d.key}</div>`
@@ -197,6 +275,7 @@ export default {
                         .style('visibility', 'visible');
                 })
                 .on('mousemove', function (event, d) {
+
                     tooltip
                         .style('top', (event.pageY - 10) + 'px')
                         .style('left', (event.pageX + 10) + 'px');
@@ -210,11 +289,24 @@ export default {
                     noHighlight(d.key.replaceAll(' ', ''))
                     tooltip.html(``).style('visibility', 'hidden');
                 })
+                .on("click", (event, d) => {
+                    console.log('clicked: ', d.key)
+                    console.log('event:', event)
+                })
+
+
+                areaChart
+                    .append('g')
+                    .attr("class", "brush")
+                    .call(brush)
+                    .attr("clip-path", "url(#clip)")
+                    .on('mousemove', (e, d) => {
+                        mouseEvent(e, d, this.store.margin.top, this.store.margin.bottom, this.store.size.height)
+                    });
+
             // .attr('height', '90%')
             // .attr('width', '90%')
             // .attr("transform", `translate(${this.store.margin.left}, ${-this.store.margin.bottom})`);
-
-
 
             //////////
             // HIGHLIGHT GROUP //
@@ -239,12 +331,13 @@ export default {
                 // reduce opacity of all groups
                 d3.selectAll(".myArea").style("opacity", .25)
 
-                d3.selectAll(".bubble").style("opacity", .01)
+                d3.selectAll(".bubble").style("opacity", 0)
 
                 // console.log('bubble selected: ', '.bubble.', d)
 
                 // console.log('myArea selected: ', '.myArea.', d)
                 // expect the one that is hovered
+
                 d3.selectAll(".bubble." + d)
                     .style("opacity", 1)
                 d3.select(".myArea." + d)
@@ -260,16 +353,40 @@ export default {
             }
 
 
+            const bisectorLine = svg.append("line")
+                        .attr("x1", 0)
+                        .attr("y1", 0)
+                        .attr("x2", 0)
+                        .attr("y2", 1000)
+                        .attr("stroke", "white")
+                        .attr("opacity", 1)
+                        .attr("border", "1px solid black")
+                        .attr("stroke-width", 2)
+                        .style("display", "none");
+
+
+            const bisectorRect = svg.append("rect")
+                        .attr("x", 0)
+                        .attr("y", 0)
+                        .attr("width", 0)
+                        .attr("height", 0)
+                        .attr("fill", "black")
+                        // .attr("stroke", "black")
+                        .attr("opacity", .3)
+                        .attr("border", "1px dashed black")
+                        .attr("stroke-width", 1);
+
+
         },
 
         rerender() {
 
             d3.select('#stacked-svg').selectAll('*').remove() // Clean all the elements in the chart
             // d3.select('#my_dataviz').selectAll('*').remove()
-            
-                this.initChart()
-            
-            
+
+            this.initChart()
+
+
         }
     },
     mounted() {
@@ -308,7 +425,8 @@ export default {
     flex-wrap: center;
     width: 100%;
 
-    border: 1px solid black; /* adds a 1px black border */
+    border: 1px solid black;
+    /* adds a 1px black border */
 }
 
 

@@ -110,7 +110,7 @@ export default {
             let radius = d3.scaleSqrt([0, d3.max(JSON.parse(JSON.stringify(this.citiesStore.citiesData.cities)), d => {
                 return d.totalproduction
             })], [0, 10 * Math.SQRT2])
-            .range([2,15])
+            .range([1,5])
 
 
             let cd = JSON.parse(JSON.stringify(this.citiesStore.citiesData.cities));
@@ -137,10 +137,10 @@ export default {
                 for (let city of cityData) {
 
 
-                    if (city.year !== "2005") {
+                    // if (city.year !== "2005") {
 
-                    }
-                    else {
+                    // }
+                    // else {
                         let marker = {
                         long: city.longitude,
                         lat: city.latitude,
@@ -155,7 +155,7 @@ export default {
                     }
 
                     markers.push(marker);
-                    }
+                    // }
                     
 
                 }
@@ -208,7 +208,7 @@ export default {
             const projection = d3.geoAlbers()
                 .rotate([center[0], 0, 0])
                 .center([0, center[1]])
-                .scale(15000)
+                .scale(12000)
                 .translate([this.citiesStore.size.width / 2, this.citiesStore.size.height / 2]);
             // const pathGenerator = d3.geoPath().projection(projection);
 
@@ -317,12 +317,14 @@ export default {
                 })
 
                 .attr('r', d => {
+                    if (parseInt(d.year) === 2006) {
                     if (d.r > 0) {
                         return d.r;
                     }
                     else {
                         return 0;
                     }
+                }
                 })
                 .attr('fill', d => d.color)
                 .attr('stroke', "black")
@@ -348,6 +350,106 @@ export default {
                     BubbleClicked(event, d, this.citiesStore.size.width, this.citiesStore.size.height)
                 })
 
+                // let startYear = 1990;
+                // let endYear = 2018;
+                // let currentYear = startYear;
+
+                //     d3.interval(() => {
+                //     bubbles.transition()
+                //         .duration(10)
+                //         .attr('r', d => {
+                //             if (parseInt(d.year) === parseInt(currentYear)) {
+
+                //             if(d.city === 'San Francisco' && d.county === 'San Francisco County') {
+                //                 console.log('d.r: ', d.r)
+                //                 console.log('d.year:', d.year)
+                //                 console.log('currentYear: ', currentYear)
+                //             }
+                //             if (d.r > 0) {
+                //                 return d.r
+                //             }
+                //             else {
+                //                 return 0;
+                //             }
+                //             }
+                //         });
+
+                //         currentYear = (currentYear + 1) % (endYear - startYear + 1) + startYear;
+                //     }, 5000);
+
+                    let startYear = 1990;
+                    let endYear = 2018;
+                    let currentYear = startYear;
+
+                    let productionData = markers.filter(d => parseInt(d.year) === parseInt(currentYear)).map(d => {
+                    return {
+                        long: d.long,
+                        lat: d.lat,
+                        color: d.color,
+                        r: d.r,
+                        opacity: d.opacity,
+                        county: d.county,
+                        city: d.city,
+                        totalproduction: d.totalproduction,
+                        year: d.year
+                    };
+                    });
+
+                    // d3.interval(() => {
+                        function animate() {
+                    productionData = markers.filter(d => parseInt(d.year) === parseInt(currentYear)).map(d => {
+                        return {
+                            long: d.long,
+                        lat: d.lat,
+                        color: d.color,
+                        r: d.r,
+                        opacity: d.opacity,
+                        county: d.county,
+                        city: d.city,
+                        totalproduction: d.totalproduction,
+                        year: d.year
+                        };
+                    });
+                    // console.log('currentYear: ', currentYear)
+                    // console.log('productionData: ', productionData)
+
+                    bubbles.data(productionData, d => d.city)
+                        .transition()
+                        .duration(1000)
+                        .ease(d3.easeLinear)
+                        .attr('r', d => {
+                            if (d.city === 'San Francisco' && d.county === 'San Francisco County') {
+                               
+                            }
+                            // console.log('currentYear: ', currentYear)
+                            // console.log('d:',d)
+                            if (d.r > 0) {
+                                return d.r
+                            }
+                            else {
+                                return 0;
+                            }
+                        })
+                        
+                        // .on("end", function() {
+                        // console.log("Current year: " + currentYear);
+                        // currentYear = (currentYear + 1) % (endYear - startYear + 1) + startYear;
+                        // });;
+                        
+                        if (currentYear === endYear) {
+                            currentYear = startYear;
+                        }
+                        else {
+
+                        currentYear = currentYear + 1;
+                        }
+                    console.log('currentYear: ', currentYear)
+                    if (currentYear <= endYear) {
+                            d3.timeout(animate, 1000);
+                        }
+                    }
+                    // animate();
+
 
             function BubbleClicked(event, d, width, height) {
                 console.log('evdnt.target: ', event)
@@ -363,6 +465,8 @@ export default {
                 const longs = selectedCircles._groups[0].map(d => d.__data__.long);
                 const lats = selectedCircles._groups[0].map(d => d.__data__.lat);
                 console.log('longs: ', longs)
+                console.log('lats: ', lats)
+                
                 // const longitudes = selectedCircles.data().map(d => d.long);
                 // const latitudes = selectedCircles.data().map(d => d.lat);
 
@@ -374,18 +478,28 @@ export default {
                 
                 // let mids = ([findMiddle(x0, x1), findMiddle(y0,y1)])
 
-                function findMedian(arr) {
-                    arr.sort((a, b) => a - b);
-                    let mid = Math.floor(arr.length / 2);
-                    if (arr.length % 2 === 1) {
-                        return arr[mid];
-                    } else {
-                        return (arr[mid - 1] + arr[mid]) / 2;
-                    }
-                    }
+                function findAverage(arr) {
+                        let sum = 0;
+                        for (let i = 0; i < arr.length; i++) {
+                            sum += arr[i];
+                        }
+                        return sum / arr.length;
+                        }
 
-                    let medx = findMedian(longs)
-                    let medy = findMedian(lats)
+                        function findAveragex(arr) {
+                        let sum = 0;
+                        for (let i = 0; i < arr.length; i++) {
+                            if (arr[i] > 0
+                            ){
+                                sum += -arr[i];
+                            }
+                            sum += arr[i];
+                        }
+                        return sum / arr.length;
+                        }
+
+                    let medx = findAveragex(longs)
+                    let medy = findAverage(lats)
 
                 let midx = projection([medx, medy])[0]
                 let midy = projection([medx, medy])[1]
@@ -413,7 +527,7 @@ export default {
                     zoom.transform,
                     d3.zoomIdentity
                     .translate(width / 2, height / 2)
-                        .scale(Math.min(8, 1.75 / Math.max((midx) / width, (midy) / height)))
+                        .scale(Math.min(8, 1.5 / Math.max((midx) / width, (midy) / height)))
                         .translate(-(midx), -(midy)),
                     d3.pointer(event, svg.node())
                 );
@@ -423,14 +537,14 @@ export default {
             }
 
             
-  const legendWidth = 200;
-const legendHeight = 100;
+  const legendWidth = 150;
+const legendHeight = 200;
 // Create a group for the legend
 const legend = svg.append('g')
                 .attr('id', 'legend')
                 .attr('background-color', 'white')
                 .attr('border', '1px solid black')
-  .attr('transform', `translate(${10}, ${this.citiesStore.size.height - legendHeight - 50})`);
+  .attr('transform', `translate(${10}, ${this.citiesStore.size.height - legendHeight - 140})`);
 // Add a rectangle with a background color for the legend
 
 legend.append('rect')
@@ -439,6 +553,7 @@ legend.append('rect')
   .style('fill', 'white')
   .style('stroke', 'black')
   .style('opacity', 0.8)
+  .attr('transform', `translate(${10}, 75)`);
   
 //   .attr('transform', `translate(${10}, ${this.citiesStore.size.height - legendHeight - 10})`);
 let legendRadius = d3.scaleSqrt([0, d3.max(JSON.parse(JSON.stringify(this.citiesStore.citiesData.cities)), d => {
@@ -566,12 +681,14 @@ svg
                 
 
                 bubbles.attr('r', d => {
+                    if (parseInt(d.year) === 2006) {
                     if (d.r > 0) {
                         return d.r / transform.k
                     }
                     else {
                         return 0;
                     }
+                }
                    });
                 // g.attr("path", path * transform.k);
             }
