@@ -8,7 +8,7 @@ CORS(app)
 @app.route("/")
 @cross_origin()
 def hello_world():
-    return "<p>Hello, World!</p>"
+    return "<p>Testing!</p>"
 
 @app.route("/fetchExample", methods=["GET", "POST"])
 @cross_origin()
@@ -27,3 +27,4 @@ def fetchExample():
 
 if __name__ == "__main__":
     app.run(port=3100, debug=True)
+

@@ -19,7 +19,7 @@ export default {
   <v-container id="main-container" class="d-flex flex-column flex-nowrap" fluid>
     <v-row no-gutters>
       <v-col cols="5">
-        <ExampleWithLegend/>
+        <Example/>
       </v-col>
     </v-row>
     <v-row no-gutters>
