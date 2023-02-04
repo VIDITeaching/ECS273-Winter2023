@@ -16,8 +16,8 @@ import { server } from "../helper";
 // let height = svgHeight - margin.top - margin.bottom;
 // console.log(height);
 // let width = svgWidth - margin.left - margin.right;
-// let width = 720;
-// let height = 300;
+let width = 720;
+let height = 300;
 
 export default {
  mounted() {
@@ -36,8 +36,8 @@ export default {
    const chart = d3
     .select(this.$refs.chart)
     .append("svg")
-    .attr("width", 400)
-    .attr("height", 300);
+    .attr("width", width)
+    .attr("height", height);
 
    const x = d3
     .scaleBand()
@@ -59,27 +59,30 @@ export default {
     .attr("y", (d) => 500 - y(d.count))
     .attr("width", x.bandwidth)
     .attr("height", (d) => y(d.count))
-    .attr("fill", "blue");
+    .attr("fill", "#002868");
 
-    chart
-     .selectAll("text")
-     .data(data)
-     .enter()
-     .append("text")
-     .text((d) => d.name)
-     .attr("x", (d) => x(d.name) + x.bandwidth() / 2)
-     .attr("y", (d) => 500 - y(d.count) + 20)
-     .attr("text-anchor", "middle")
-     .style("fill", "white")
-     .style("font-size", "10px");
+   chart
+    .selectAll("text")
+    .data(data)
+    .enter()
+    .append("text")
+    .text(function(d){
+      return d.name + "\n" + d.count;
+    })
+    .attr("x", (d) => x(d.name) + x.bandwidth() / 2)
+    .attr("y", (d) => 500 - y(d.count) + 20)
+    .attr("text-anchor", "middle")
+    .style("fill", "white")
+    .style("font-size", "10px")
+    .attr("dominant-baseline", "middle");
 
-      chart
+   chart
     .append("text")
     .attr("x", 200)
     .attr("y", 20)
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
-    .text("Awesome Barchart");
+    .text("US Election Speaker Speaking Count");
   },
  },
 };
