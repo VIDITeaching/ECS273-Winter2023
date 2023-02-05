@@ -1,7 +1,8 @@
 ## Personal Information
 Name: Yifeng Shi
-Email Address(prefix):syfshi
 
+Email Address(prefix):syfshi
+## Description
 In this assignment, I chose to use image data named Mnist for visualization.
 ## Interactive Graph(left part)
 I implemented a Lineplot graph with axis x representing digits from 0 to 9, and axis y representing performance(0.00~1.00) to visualize the predicted report of the SVM model.
