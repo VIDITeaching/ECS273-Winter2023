@@ -1,5 +1,5 @@
-<script lang="ts">
-import * as d3 from "d3";
+<script lang='ts'>
+import * as d3 from 'd3';
 import axios from 'axios';
 import { isEmpty, debounce } from 'lodash';
 import { server } from '../helper';
@@ -90,7 +90,7 @@ export default {
             // This is further utilizing data joins in d3.js, you can find the equivalent code in the comments below.
             // Check out https://observablehq.com/@d3/selection-join
             const legendGroups = legendContainer.append('g')
-                .attr('transform', `translate(0, ${titleHeight})`) // this is applied to "g" element and will affect all the child elements.
+                .attr('transform', `translate(0, ${titleHeight})`) // this is applied to 'g' element and will affect all the child elements.
                 .selectAll('g')
                 .data<string>(clusterLabels)
                 .join((enter) => { // This enter syntax is recommended when you want to join multiple non-nested elements per data point
@@ -170,13 +170,13 @@ export default {
 
 <!-- We use flex to arrange the layout-->
 <template>
-    <div class="viz-container d-flex justify-end">
-        <div class="chart-container d-flex" ref="scatterContainer">
-            <svg id="scatter-svg" width="100%" height="100%">
+    <div class='viz-container d-flex justify-end'>
+        <div class='chart-container d-flex' ref='scatterContainer'>
+            <svg id='scatter-svg' width='100%' height='100%'>
             </svg>
         </div>
-        <div id="scatter-legend-container" class="d-flex">
-            <svg id="scatter-legend-svg" width="100%" height="100%">
+        <div id='scatter-legend-container' class='d-flex'>
+            <svg id='scatter-legend-svg' width='100%' height='100%'>
             </svg>
         </div>
     </div>

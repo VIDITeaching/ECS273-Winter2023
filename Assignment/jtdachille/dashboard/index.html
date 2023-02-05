@@ -1,12 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ECS273 Visual Analytics</title>
-  </head>
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>ECS273 Visual Analytics</title>
+      <script src="http://d3js.org/d3.v3.min.js"></script>
+      <script src="d3.parcoords.js"></script>
+      <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.6/underscore-umd-min.js"></script>
+      <script src="./math.js"></script>
+      <link rel="stylesheet" type="text/css" href="d3.parcoords.css">
+    </head>
   <body>
     <div id="app"></div>
+    <div id="example" class="parcoords" style="width:1060px;height:550px"></div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
+
+<script>
+  // color scale for zscores
+  var zcolorscale = d3.scale.linear()
+    .domain([-2,-0.5,0.5,2])
+    .range(["brown", "#999", "#999", "steelblue"])
+    .interpolate(d3.interpolateLab);
+  const server = 'http://localhost:3100';
+  axios.post(`${server}/fetchTinyRent`)
+      .then(resp => {
+          var pc = d3.parcoords()("#example")
+                  .data(resp.data.data)
+                  .hideAxis(["descr", "details", "lat", "lon", 'date', 'post_id', 'address', 'title', 'room_in_apt'])
+                  .composite("darken")
+                  // .color(function(d) { return blue_to_brown(d['economy (mpg)']); })  // quantitative color scale
+                  .mode("queue")
+                  .alpha(0.35)
+                  .render()
+                  .brushMode("1D-axes")  // enable brushing
+                  .interactive()  // command line mode    
+                  
+            change_color("price");
+
+            // click label to activate coloring
+            pc.svg.selectAll(".dimension")
+              .on("click", change_color)
+              .selectAll(".label")
+              .style("font-size", "14px");
+
+            // update color
+            function change_color(dimension) {
+            pc.svg.selectAll(".dimension")
+              .style("font-weight", "normal")
+              .filter(function(d) { return d == dimension; })
+              .style("font-weight", "bold")
+
+            pc.color(zcolor(pc.data(),dimension)).render()
+            }
+
+            // return color function based on plot and dimension
+            function zcolor(col, dimension) {
+            var z = zscore(_(col).pluck(dimension).map(parseFloat))
+            return function(d) { return zcolorscale(z(d[dimension])) }
+            };
+
+            // color by zscore
+            function zscore(col) {
+            var n = col.length,
+                mean = _(col).mean(),
+                sigma = _(col).stdDeviation();
+            return function(d) {
+              return (d-mean)/sigma;
+            };
+            };          
+          return true;
+      })
+      .catch(error => console.log(error));
+  
+
+  </script>

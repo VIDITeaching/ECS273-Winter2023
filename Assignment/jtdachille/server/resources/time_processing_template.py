@@ -76,3 +76,10 @@ def prepare_time_template_data(plot=False) -> pd.DataFrame:
         plot_acf(sales['Total'], lags=48);
         plot_pacf(sales['Total'], lags=30);
     return sales
+
+def prepare_rent_data() -> pd.DataFrame:
+    rent = pd.read_csv('../server/data/rent_tiny.csv', 
+           parse_dates=['date'], 
+           date_parser=lambda x: pd.to_datetime(x, format="%Y%m%d"))
+
+    return rent

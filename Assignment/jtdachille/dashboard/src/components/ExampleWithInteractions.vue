@@ -1,5 +1,5 @@
-<script lang="ts">
-import * as d3 from "d3";
+<script lang='ts'>
+import * as d3 from 'd3';
 import { debounce, isEmpty } from 'lodash';
 import { Point } from '../types';
 interface ScatterPoint extends Point{
@@ -163,7 +163,7 @@ export default {
                     </select>
                 </label>
             </div>
-            <svg id="scatter-legend-svg" width="100%" height="80%">
+            <svg id='scatter-legend-svg' width='100%' height='80%'>
             </svg>
         </div>
 
