@@ -3,7 +3,7 @@ import numpy as np
 
 def _prepare_toy_data() -> tuple[list[int], list[tuple]]:
     # define undirected network data.
-    nodes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] # 10 nodes indexed from 0 to 9.
+    nodes = [0, 1, 2, 3, 4, 5, 122, 6, 7, 8, 9, 120] # 10 nodes indexed from 0 to 9.
     edges = [(0, 1), (0, 2), (0, 3), (0, 6), (0, 7), (0, 9), 
              (1, 2), (1, 5), (1, 6), (1, 7), 
              (2, 4), (2, 9), 
@@ -33,9 +33,20 @@ def find_most_influential(G):
     
     return node_most_influential
 
+def force_layout(G):
+    pos = nx.spring_layout(G)
+    position = []
+    for i in pos.keys():
+        tmp = {"id": int(i), "x": pos[i][0], "y": pos[i][1]}
+        position.append(tmp)
+
+    return position
+
 
 ###################        Example     ################### 
 # nodes, edges = _prepare_toy_data()
-# toy_data_network = contstruct_networkx(nodes, edges)
-# node_most_influential = find_most_influential(G)
+# toy_data_network = contsruct_networkx(nodes, edges)
+# node_most_influential = find_most_influential(toy_data_network)
+# pos = force_layout(toy_data_network)
+# print(pos)
 ##########################################################

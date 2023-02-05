@@ -2,7 +2,7 @@
 import * as d3 from "d3";
 import { sankey as d3Sankey, sankeyLinkHorizontal as d3SsankeyLinkHorizontal } from 'd3-sankey';
 import axios from 'axios';
-import { isEmpty, debounce } from 'lodash';
+import { isEmpty, debounce, takeWhile } from 'lodash';
 import { server } from '../helper';
 
 import { Point, ComponentSize, Margin } from '../types';
@@ -30,13 +30,18 @@ export default {
             selected_sets: [],
             network_nodes: [],
             network_links: [],
+            network_positions: [],
             network_notes: "",
+            network_data: false,
         }
     },
     computed: {
         rerender() {
             // return (!isEmpty(this.points))  && this.size
             return (!isEmpty(this.coors))  && this.size
+        },
+        rerender_network() {
+            return (!isEmpty(this.network_positions)) && this.size
         }
     },
     created() {
@@ -160,17 +165,19 @@ export default {
                     this.network_notes = resp.data.notes;
                     this.network_nodes = resp.data.nodes;
                     this.network_links = resp.data.links;
-                    console.log(resp.data);
+                    this.network_positions = resp.data.positions;
+                    // console.log(resp.data);
+                    this.network_data = true;
+                    this.drawChart_network();
                     return true;
                 })
                 .catch(error => console.log(error));
-            
-            if(!isEmpty(this.network_nodes)) {
-                
-            }
-            else {
-                console.log("data not here yet")
-            }
+            // while (!this.network_data) {
+            // }
+            // console.log("data is here");
+        },
+        drawChart_network() {
+            console.log(this.network_notes);
         },
         initLegend() {
             let legendContainer = d3.select('#scatter-legend-svg')
@@ -183,14 +190,24 @@ export default {
     watch: { // updated because a legend is added.
         rerender(newSize) {
             if (!isEmpty(newSize)) {
-                d3.select('#scatter-svg').selectAll('*').remove()
+                // d3.select('#scatter-svg').selectAll('*').remove()
                 d3.select('#parallelset-svg').selectAll('*').remove()
-                d3.select('#scatter-legend-svg').selectAll('*').remove()
+                // d3.select('#scatter-legend-svg').selectAll('*').remove()
                 this.initChart_parallelset()
                 // this.initChart_network()
                 this.initLegend()
             }
-        }
+        },
+        rerender_network(newSize) {
+            if (!isEmpty(newSize)) {
+                // d3.select('#scatter-svg').selectAll('*').remove()
+                d3.select('#network-svg').selectAll('*').remove()
+                // d3.select('#scatter-legend-svg').selectAll('*').remove()
+                // this.initChart_parallelset()
+                this.drawChart_network()
+                // this.initLegend()
+            }
+        },
     },
     mounted() {
         window.addEventListener('resize', debounce(this.onResize, 100))

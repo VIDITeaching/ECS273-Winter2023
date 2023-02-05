@@ -35,8 +35,8 @@ def fetchTwitch():
         request_context = request.get_json() # JSON object
         set = request_context['set']
         id = request_context['id']
-        nodes, links, notes = processTwitchEdge(set, id)
-        resp = jsonify(nodes=nodes, links=links, notes=notes)
+        nodes, links, positions, notes = processTwitchEdge(set, id)
+        resp = jsonify(nodes=nodes, links=links, positions=positions, notes=notes)
         return resp
 
 
