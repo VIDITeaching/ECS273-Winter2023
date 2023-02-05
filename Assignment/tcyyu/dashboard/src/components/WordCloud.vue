@@ -65,7 +65,7 @@ export default {
       const words = jsonData.sort(function (a, b) {
         return parseFloat(b['value']) - parseFloat(a['value'])
       })
-      return words.slice(0, 150)  // 只取前 150 個
+      return words.slice(0, 150)  // 只取前 100 個
     }
   },
   methods: {
