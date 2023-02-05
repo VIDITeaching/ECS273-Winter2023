@@ -15,3 +15,7 @@ export interface Point {
     readonly posX: number;
     readonly posY: number;
 }
+
+export interface Val {
+    readonly Val: number;
+}

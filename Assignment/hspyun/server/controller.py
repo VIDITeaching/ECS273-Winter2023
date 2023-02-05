@@ -6,7 +6,7 @@ from resources.hd_processing_template import perform_PCA, perform_TSNE
 #from resources.time_processing_template import prepare_time_template_data, apply_arima, apply_sarima
 #from resources.load_bean import load_bean
 
-def read_bean(csv_path):
+def read_bean(csv_path="../server/data/Dry_Bean_Dataset.csv"):
     df = pd.read_csv(csv_path)
     data = df.drop(columns='Class').values
     labels = df['Class']
@@ -14,11 +14,11 @@ def read_bean(csv_path):
     X: np.ndarray = data
     y: np.ndarray = labels
     target_names = labels.drop_duplicates()
-    return X, y, target_names   
+    return X, y, target_names, df  
 
 def processExample(csv_path = "../server/data/Dry_Bean_Dataset.csv", 
                     method: str = 'PCA') -> tuple[list[dict], list[int]]:
-    X, y, target_names = read_bean(csv_path)
+    X, y, target_names, _ = read_bean(csv_path)
 
     if method == 'PCA':
         Z, _ = perform_PCA(X)
