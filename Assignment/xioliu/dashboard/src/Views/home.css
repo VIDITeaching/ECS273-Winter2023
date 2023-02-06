@@ -1,0 +1,61 @@
+.background {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    background-color: #e8e8e8;
+    min-height: 100vh;
+}
+.overall {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 20px;
+
+    height: 47vh;
+    width: 80vw;
+
+    margin-top: 5%;
+    /*padding-left: -5%;*/
+    padding-top: 2%;
+
+    /*margin-left: -20%;*/
+}
+
+.contexts {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 45vh;
+    margin-top: 1%;
+    justify-content: center;
+    /*flex-direction: column;*/
+    /*align-items: center;*/
+    /*justify-content: flex-start;*/
+}
+
+.left {
+    background-color: white;
+    width: 40%;
+    height: 90%;
+    border-radius: 20px;
+
+}
+
+.right {
+    background-color: white;
+    width: 80vw;
+    height: 90%;
+    border-radius: 20px;
+    /*margin-left: 10%;*/
+    padding-left: 15%;
+}
+.title_txt {
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin-bottom: -4%;
+    /*margin-left: -50%;*/
+    font-size: 35px;
+
+}
