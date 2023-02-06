@@ -26,3 +26,43 @@ def perform_Histogram(X: np.ndarray, y:np.ndarray, taget_names:np.ndarray, num_b
     hist_all = np.vstack([edge_all,freq_all])
 
     return hist_all, cluster_all
+
+
+def perform_CorrMat(X: np.ndarray, y:np.ndarray, taget_names:np.ndarray, num_bins=50) -> tuple[np.ndarray, np.ndarray]:
+    posX = []
+    posY = []
+    corr = []
+
+    cols = ['Area',
+            'Perimeter',
+            'MajorAxisLength',
+            'MinorAxisLength',
+            'AspectRation',
+            'Eccentricity','ConvexArea',
+            'EquivDiameter',
+            'Extent',
+            'Solidity',
+            'roundness',
+            'Compactness',
+            'ShapeFactor1',
+            'ShapeFactor2',
+            'ShapeFactor3',
+            'ShapeFactor4']
+            
+    stdsc = preprocessing.StandardScaler()
+
+    X_std = stdsc.fit_transform(X)
+    cov_mat =np.cov(X_std.T)
+
+    for i in range(len(cov_mat)):
+        for j in range(len(cov_mat[0])):
+            print(cov_mat[i][j])
+            posX.append(cols[i])
+            posY.append(cols[j])
+            corr.append(cov_mat[i][j])
+            
+    pos_all = np.vstack([posX,posY])
+
+    return pos_all, corr
+
+

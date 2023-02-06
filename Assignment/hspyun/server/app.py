@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
-from controller import processExample, read_bean, processBean
+from controller import processExample, read_bean, processBeanHist, processBeanCorrMat
 import sys
 import pandas as pd
 import numpy as np
@@ -30,11 +30,24 @@ def fetchExample():
 @cross_origin()
 def fetchData():
     if request.method == "GET": # handling GET request
-        points, cluster_names = processBean()
+        points, cluster_names = processBeanHist()
     else: # handling POST request, which is only effective when ExampleWithInteractions.vue is loaded
         request_context = request.get_json() # JSON object
         method = request_context['method']
-        points, cluster_names = processBean(feature=method)
+        points, cluster_names = processBeanHist(feature=method)
+
+    resp = jsonify(data=points, clusters=cluster_names)
+    return resp
+
+@app.route("/fetchCorrMat", methods=["GET", "POST"])
+@cross_origin()
+def fetchCorrMat():
+    if request.method == "GET": # handling GET request
+        points, cluster_names = processBeanCorrMat()
+    else: # handling POST request, which is only effective when ExampleWithInteractions.vue is loaded
+        request_context = request.get_json() # JSON object
+        method = request_context['method']
+        points, cluster_names = processBeanCorrMat(feature=method)
 
     resp = jsonify(data=points, clusters=cluster_names)
     return resp
