@@ -22,8 +22,8 @@ export default {
 <template>
   <v-container id='main-container' class='d-flex flex-column flex-nowrap' fluid>
     <v-row no-gutters>
-      <v-col cols='5'>
-        <!-- <Chart /> -->
+      <v-col cols='12'>
+        <Chart />
       </v-col>
       <!-- <v-col cols='5'>
         <Example />

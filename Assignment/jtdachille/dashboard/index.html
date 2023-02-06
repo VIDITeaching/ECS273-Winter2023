@@ -10,12 +10,16 @@
       <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.6/underscore-umd-min.js"></script>
       <script src="./math.js"></script>
       <link rel="stylesheet" type="text/css" href="d3.parcoords.css">
+      <script type="module" src="/src/main.ts"></script>
     </head>
   <body>
-    <div id="app"></div>
-    <div id="example" class="parcoords" style="width:1060px;height:550px"></div>
-
-    <script type="module" src="/src/main.ts"></script>
+    <h1 style="text-align:center">Rent Explorer: Rent Prices in SF</h1>
+    <h3 style="text-align:center">Click on numeric column to color diagram. Brush axis to filter data</h1>
+    <div style="display:flex; height: 100vh;flex-flow: column;">
+      <div id="example" class="parcoords" style="flex: 1; width:100%;height:100%"></div>
+      <h1 style="text-align:center">Rent prices over time. Size corresponds to sqft. of listing.</s></h1>
+      <div id="app" style="flex: 1;"></div>
+    </div>
   </body>
 </html>
 
@@ -30,9 +34,9 @@
       .then(resp => {
           var pc = d3.parcoords()("#example")
                   .data(resp.data.data)
-                  .hideAxis(["descr", "details", "lat", "lon", 'date', 'post_id', 'address', 'title', 'room_in_apt'])
+                  .hideAxis(["city", "nhood", "descr", "details", "lat", "lon", 'date', 'post_id', 'address', 'title', 'room_in_apt'])
                   .composite("darken")
-                  // .color(function(d) { return blue_to_brown(d['economy (mpg)']); })  // quantitative color scale
+                  .color(function(d) { return blue_to_brown(d['economy (mpg)']); })  // quantitative color scale
                   .mode("queue")
                   .alpha(0.35)
                   .render()
@@ -49,28 +53,28 @@
 
             // update color
             function change_color(dimension) {
-            pc.svg.selectAll(".dimension")
-              .style("font-weight", "normal")
-              .filter(function(d) { return d == dimension; })
-              .style("font-weight", "bold")
+              pc.svg.selectAll(".dimension")
+                .style("font-weight", "normal")
+                .filter(function(d) { return d == dimension; })
+                .style("font-weight", "bold")
 
-            pc.color(zcolor(pc.data(),dimension)).render()
+              pc.color(zcolor(pc.data(),dimension)).render()
             }
 
             // return color function based on plot and dimension
             function zcolor(col, dimension) {
-            var z = zscore(_(col).pluck(dimension).map(parseFloat))
-            return function(d) { return zcolorscale(z(d[dimension])) }
+              var z = zscore(_(col).pluck(dimension).map(parseFloat))
+              return function(d) { return zcolorscale(z(d[dimension])) }
             };
 
             // color by zscore
             function zscore(col) {
-            var n = col.length,
-                mean = _(col).mean(),
-                sigma = _(col).stdDeviation();
-            return function(d) {
-              return (d-mean)/sigma;
-            };
+              var n = col.length,
+                  mean = _(col).mean(),
+                  sigma = _(col).stdDeviation();
+              return function(d) {
+                return (d-mean)/sigma;
+              };
             };          
           return true;
       })

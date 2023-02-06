@@ -66,7 +66,6 @@ def prepare_time_template_data(plot=False) -> pd.DataFrame:
         plt.plot(sales)
         plt.title('Sales in 1000s of Units', fontsize=20)
         plt.ylabel('Sales', fontsize=16)
-        
         plt.rc('figure',figsize=(14,8))
         plt.rc('font',size=15)
 
@@ -78,8 +77,12 @@ def prepare_time_template_data(plot=False) -> pd.DataFrame:
     return sales
 
 def prepare_rent_data() -> pd.DataFrame:
-    rent = pd.read_csv('../server/data/rent_tiny.csv', 
+    rent = pd.read_csv('../server/data/rent_40k.csv', 
            parse_dates=['date'], 
            date_parser=lambda x: pd.to_datetime(x, format="%Y%m%d"))
-
+    # Had one listing with over 800,000 sqft
+    rent = rent[rent['sqft'] <= 10000]
+    rent = rent[rent['price'] <= 10000]
+    rent = rent[rent['beds'] <= 5]
+    rent = rent[rent['baths'] <= 5]
     return rent

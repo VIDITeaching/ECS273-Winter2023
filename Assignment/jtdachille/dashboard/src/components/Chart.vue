@@ -48,7 +48,7 @@ export default {
     },
     created() {
         console.log('create');
-        axios.post(`${server}/fetchTinyRent`)
+        axios.post(`${server}/fetchTinyRent2`)
             .then(resp => {
                 // console.log(resp.data);
                 this.rentData = resp.data.data;
@@ -68,6 +68,8 @@ export default {
             // let xExtents = d3.extent(Object.values(this.rentData).map(d => new Date(d.date)));
             let xExtents = d3.extent(this.rentData.map(d => new Date(d.date)));
             let yExtents = d3.extent(this.rentData.map(d => d.price));
+            let zExtents = d3.extent(this.rentData.map(d => d.sqft));
+
             let xScale = d3.scaleTime()
             .range([this.margin.left, this.size.width - this.margin.right])
             .domain(xExtents).nice();
@@ -75,6 +77,12 @@ export default {
             let yScale = d3.scaleLinear()
             .range([this.size.height - this.margin.bottom, this.margin.top])
             .domain(yExtents).nice();
+
+            let scale = 100;
+            let zScale = d3.scaleLinear()
+            .range([1, 16])
+            .domain(zExtents);
+            console.log(zScale);
 
             const xAxis = chartContainer.append('g')
             .attr('transform', `translate(0, ${this.size.height - this.margin.bottom})`)
@@ -93,15 +101,16 @@ export default {
             .attr('transform', `translate(${this.size.width / 2}, ${this.size.height - this.margin.top})`)
             .append('text')
             .text('Date');
+            let colors = ['#051c33', '#0c4c6f', '#1379a8', '#45aebf', '#85c9a8', '#a9d185']
 
-            let colorScale = d3.scaleOrdinal().domain(d3.extent(this.rentData, (d) => d.beds)).range(d3.schemeTableau10) // d3.schemeTableau10: string[]
+            let colorScale = d3.scaleOrdinal().domain(d3.extent(this.rentData, (d) => d.beds)).range(colors) // d3.schemeTableau10: string[]
             const points = chartContainer.append('g')
             .selectAll('circle')
             .data(this.rentData)
             .join('circle')
             .attr('cx', (d) => xScale(new Date(d.date)))
             .attr('cy', (d) => yScale(d.price))
-            .attr('r', 5)
+            .attr('r', (d) => zScale(d.sqft))
             .style('fill', (d) => colorScale(String(d.beds)) as string)
             .style('opacity', .7);
 
@@ -117,10 +126,17 @@ export default {
             let legendContainer = d3.select('#scatter-legend-svg')
 
             let clusterLabels: string[] = this.rentData.map((d) => `# of beds: ${d.beds}`)
+            let sortedClusterLabels = clusterLabels.sort((a, b) => {
+                let bedsA = Number(a.split(':')[1].trim());
+                let bedsB = Number(b.split(':')[1].trim());
+                return bedsB - bedsA;
+            });
             console.log('labels: ', clusterLabels);
             clusterLabels = Array.from(new Set(clusterLabels));
             console.log('labels: ', clusterLabels);
-            let colorScale = d3.scaleOrdinal().domain(clusterLabels).range(d3.schemeTableau10)
+            let colors = ['#051c33', '#0c4c6f', '#1379a8', '#45aebf', '#85c9a8', '#a9d185']
+
+            let colorScale = d3.scaleOrdinal().domain(clusterLabels).range(colors)
 
             const rectSize = 12;
             const titleHeight = 20;
