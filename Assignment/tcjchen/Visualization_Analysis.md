@@ -1,4 +1,9 @@
+# Notes
+When run `npm install` for the first time, it will take a while for `nltk` module to load the necessary file.
+
 # Left Chart (WordCloud)
+Since generating wordcloud is on demand, meaning that everytime the website is loaded or the dropdown menu is being selected, the back-end server start to calculate everything. Therefore, it is necessary to wait about 5 seconds to see the wordcloud.
+
 Use dropdown menu to choose the wordcloud for specific person (i.e. Moderator, Trump, and Biden).
 The bigger the word the more it is used by that person and the occurence of the word is correlated with the color. The darker the color the more it is used.
 
