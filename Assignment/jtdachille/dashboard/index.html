@@ -36,7 +36,7 @@
                   .data(resp.data.data)
                   .hideAxis(["city", "nhood", "descr", "details", "lat", "lon", 'date', 'post_id', 'address', 'title', 'room_in_apt'])
                   .composite("darken")
-                  .color(function(d) { return blue_to_brown(d['economy (mpg)']); })  // quantitative color scale
+                  .color(function(d) { return blue_to_brown(d["price"]); })  // quantitative color scale
                   .mode("queue")
                   .alpha(0.35)
                   .render()

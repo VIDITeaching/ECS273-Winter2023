@@ -39,6 +39,7 @@ export default {
             rentData: [] as RentData[],
             size: { width: 0, height: 0 } as ComponentSize,
             margin: {left: 40, right: 50, top: 20, bottom: 50} as Margin,
+            colors: ['#ADD8E6', '#87CEEB', '#1E90FF', '#FFA07A', '#FF7F50', '#FF4500'].reverse(),
         }
     },
     computed: {
@@ -101,9 +102,8 @@ export default {
             .attr('transform', `translate(${this.size.width / 2}, ${this.size.height - this.margin.top})`)
             .append('text')
             .text('Date');
-            let colors = ['#051c33', '#0c4c6f', '#1379a8', '#45aebf', '#85c9a8', '#a9d185']
 
-            let colorScale = d3.scaleOrdinal().domain(d3.extent(this.rentData, (d) => d.beds)).range(colors) // d3.schemeTableau10: string[]
+            let colorScale = d3.scaleOrdinal().domain(d3.extent(this.rentData, (d) => d.beds)).range(this.colors) // d3.schemeTableau10: string[]
             const points = chartContainer.append('g')
             .selectAll('circle')
             .data(this.rentData)
@@ -134,9 +134,8 @@ export default {
             console.log('labels: ', clusterLabels);
             clusterLabels = Array.from(new Set(clusterLabels));
             console.log('labels: ', clusterLabels);
-            let colors = ['#051c33', '#0c4c6f', '#1379a8', '#45aebf', '#85c9a8', '#a9d185']
 
-            let colorScale = d3.scaleOrdinal().domain(clusterLabels).range(colors)
+            let colorScale = d3.scaleOrdinal().domain(clusterLabels).range(this.colors)
 
             const rectSize = 12;
             const titleHeight = 20;
