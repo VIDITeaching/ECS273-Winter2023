@@ -73,7 +73,7 @@ def processTwitchEdge(set, id):
     netG = contsruct_networkx(nodes=intersection_id, edges=twitchEdge)
     # eigen = find_most_influential(netG)
     posG = force_layout(netG)
-    note = "dummy note"
+    note = "Force-directed network layout for the intersection players on twitch of the selected sets."
 
     # return node, link, pos, note
     # return intersection_id, twitchEdge_tmp, posG, note

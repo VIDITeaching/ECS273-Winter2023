@@ -187,7 +187,7 @@ export default {
             const linkDraw = d3.map(this.network_links, ([s, t]) => [s, t]);
             const xDomain = d3.extent(X);
             const yDomain = d3.extent(Y);
-            const xRange = [10, this.size.width * 0.8 - 10];
+            const xRange = [50, this.size.width - 50];
             const yRange = [this.size.height - 10, 10];
             const xScale = d3.scaleLinear(xDomain, xRange);
             const yScale = d3.scaleLinear(yDomain, yRange);
@@ -251,14 +251,20 @@ export default {
 <!-- We use flex to arrange the layout-->
 <template>
     <div class="viz-container justify-end">
+        <div class="chart-title">
+            <p >Twitch player speaking Danish, Hungarian, and Norwegian with different view counts and active account time. Click to select.</p>
+        </div>
         <div class="chart-container" ref="parallelsetContainer">
             <!-- <svg id="scatter-svg" width="100%" height="100%">
             </svg> -->
             <svg id="parallelset-svg" width="100%" height="100%"></svg>
         </div>
+        <div class="chart-title">
+            <p >{{ network_notes }}</p>
+        </div>
         <div class="chart-container d-flex" ref="networkContainer">
-            <svg id="network-svg" width="80%" height="100%"></svg>
-            <svg id="scatter-legend-svg" width="20%" height="100%"></svg>
+            <svg id="network-svg" width="100%" height="100%"></svg>
+            <!-- <svg id="network-note-svg" width="20%" height="100%"></svg> -->
         </div>
         <!-- <div id="scatter-legend-container" class="d-flex">
             <svg id="scatter-legend-svg" width="100%" height="100%">
@@ -274,10 +280,17 @@ export default {
     flex-direction: row;
     flex-wrap: nowrap;
 }
+.chart-title{
+    width: 100%;
+    height: 4%;
+}
 .chart-container{
     /* width: calc(100% - 5rem); */
     width: 100%;
-    height: 50%;
+    height: 45%;
+}
+.wrap_test{
+    text-overflow: ellipsis;
 }
 /* #scatter-legend-container{
     width: 5rem;

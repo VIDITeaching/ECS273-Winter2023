@@ -24,22 +24,8 @@ export default {
     <v-row>
       <v-col>
         <HW_1 />
-        <!-- <HW_2 /> -->
       </v-col>
-      <!-- <v-col>
-        <HW_2/>
-      </v-col> -->
     </v-row>
-    <!-- <v-row no-gutters>
-      <v-col cols="5">
-        <HW_2/>
-      </v-col>
-    </v-row> -->
-    <!-- <v-row no-gutters>
-      <v-col>
-        <Notes msg="This message is showcasing how to pass down the props"/>
-      </v-col>
-    </v-row> -->
   </v-container>
 </template>
 
