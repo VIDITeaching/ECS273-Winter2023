@@ -6,7 +6,6 @@ import sys
 
 
 def process(titlesPath, journalsPath):
-    print('Processing data', file=sys.stderr)
     covid19Data = pd.read_csv("../server/data/COVID-19.csv")
 
     # 處理 abstract

@@ -1,5 +1,6 @@
 Flask==2.2.2
 Flask_Cors==3.0.10
+gdown==4.6.0
 matplotlib==3.6.2
 networkx==2.8.4
 nltk==3.7
@@ -12,5 +13,4 @@ seaborn==0.12.2
 statsmodels==0.13.5
 tqdm==4.64.1
 txtai==5.2.0
-wget==3.2
 wordcloud==1.8.2.2
