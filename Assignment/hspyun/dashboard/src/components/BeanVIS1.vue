@@ -66,7 +66,7 @@ export default {
             let xScale = d3.scaleLinear()
                 .range([this.store.margin.left, this.store.size.width - this.store.margin.right])
                 .domain(xExtents)
-
+                
             let yScale = d3.scaleLinear()
                 .range([this.store.size.height - this.store.margin.bottom, this.store.margin.top])
                 .domain(yExtents)
@@ -83,33 +83,130 @@ export default {
             //     .attr('r', 5)
             //     .style('fill', (d: ScatterPoint) => colorScale(String(d.cluster)) as string)
             //     .style('opacity', .7)
+
+            // const points = chartContainer.append('g')
+            //     .selectAll('line')
+            //     .data<ScatterPoint>(this.store.points)
+            //     .join('line')
+            //     .attr('x1', (d: ScatterPoint) => xScale(d.posX))
+            //     .attr('y1', (d: ScatterPoint) => yScale(d.posY))
+            //     .attr('x2', (d: ScatterPoint) => xScale(d.posX))
+            //     .attr('y2', (d: ScatterPoint) => yScale(d.posY))
+            //     .style("stroke", (d: ScatterPoint) => colorScale(String(d.cluster)) as string)
+            //     .style("stroke-width", 2)
+            //     .style('opacity', .7)
+
+            // const points = chartContainer.append('g')
+            //     .selectAll('line')
+            //     .data<ScatterPoint>(this.store.points)
+            //     .join('line')
+            //     .attr('x1', (d: ScatterPoint) => xScale(d.posX))
+            //     .attr('y1', (d: ScatterPoint) => yScale(d.posY))
+            //     .attr('x2', (d: ScatterPoint) => xScale(d.posX))
+            //     .attr('y2', (d: ScatterPoint) => yScale(d.posY))
+            //     .style("stroke", (d: ScatterPoint) => colorScale(String(d.cluster)) as string)
+            //     .style("stroke-width", 2)
+            //     .style('opacity', .7)
+        
             const points = chartContainer.append('g')
-                .selectAll('line')
-                .data<ScatterPoint>(this.store.points)
-                .join('line')
-                .attr('x1', (d: ScatterPoint) => xScale(d.posX))
-                .attr('y1', (d: ScatterPoint) => yScale(d.posY))
-                .attr('x2', (d: ScatterPoint) => xScale(d.posX))
-                .attr('y2', (d: ScatterPoint) => yScale(d.posY+10))
+                .selectAll(".bar")
+                .data(this.store.points)
+                .enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", d => xScale(d.posX))
+                .attr("y", d => yScale(d.posY))
+                .attr("width", 1)
+                .attr("height", d => this.store.size.height - this.store.margin.bottom - yScale(d.posY))
                 .style("stroke", (d: ScatterPoint) => colorScale(String(d.cluster)) as string)
-                .style("stroke-width", 2)
-                .style('opacity', .7)
-
-
+                .style('opacity', .5)
+                           
             const title = chartContainer.append('g')
                 .append('text')
-                .attr('transform', `translate(${this.store.size.width / 2}, ${this.store.size.height - this.store.margin.top})`)
+                .attr('transform', `translate(${this.store.size.width / 2}, ${this.store.size.height - this.store.margin.top / 2})`)
                 .attr('dy', '0.5rem')
                 .style('text-anchor', 'middle')
                 .style('font-weight', 'bold')
                 .text(`Dry Bean ${this.selectedMethod} Histogram`)
+
+            const xaxis = chartContainer.append("g")
+                .attr("transform", "translate(0," + (this.store.size.height- this.store.margin.bottom) + ")")
+                .call(d3.axisBottom(xScale))
+                .append("text")
+                .attr("fill", "#000")
+                .attr("y", 6)
+                .attr("dy", "0.71em")
+                .attr("text-anchor", "end")
+                .text(`${this.selectedMethod}`);
+
+            const yaxis = chartContainer.append("g")
+                .attr("transform", `translate(${this.store.margin.left},0)`)
+                .call(d3.axisLeft(yScale))
+                .append("text")
+                .attr("fill", "#000")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", "0.71em")
+                .attr("text-anchor", "end")
+                .text("Frequency");
+
+            //------------------------------
+            // let chartContainer = d3.select('#bean-hist-svg')
+            // const margin = { top: this.store.margin.top,
+            //                 right: this.store.margin.right,
+            //                 bottom: this.store.margin.bottom, 
+            //                 left: this.store.margin.left };
+            // const width = this.store.size.width - this.store.margin.right - this.store.margin.left;
+            // const height = this.store.size.height - this.store.margin.top - this.store.margin.bottom;
+
+            // const g = chartContainer.append("g")
+            //     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            // const x = d3.scaleBand().rangeRound([0, width]).padding(0.1);
+            // const y = d3.scaleLinear().rangeRound([height, 0]);
             
-            let data: Number[] = []
-            this.store.points.forEach((d) => {
-                data.push(d.posY)
-            });
-            console.log(data)
+            // let xExtents = d3.extent(this.store.points.map((d: ScatterPoint) => d.posX as number)) as [number, number]
+            // let yExtents = d3.extent(this.store.points.map((d: ScatterPoint) => d.posY as number)) as [number, number]
+
+
+            // let xScale = d3.scaleLinear()
+            //     .range([this.store.margin.left, this.store.size.width - this.store.margin.right])
+            //     .domain(xExtents)
+
+            // let yScale = d3.scaleLinear()
+            //     .range([this.store.size.height - this.store.margin.bottom, this.store.margin.top])
+            //     .domain(yExtents)
+
+            // g.append("g")
+            //     .attr("transform", "translate(0," + height + ")")
+            //     .call(d3.axisBottom(x))
+            //     .append("text")
+            //     .attr("fill", "#000")
+            //     .attr("y", 6)
+            //     .attr("dy", "0.71em")
+            //     .attr("text-anchor", "end")
+            //     .text("Letter");
+
+            // g.append("g")
+            //     .call(d3.axisLeft(y))
+            //     .append("text")
+            //     .attr("fill", "#000")
+            //     .attr("transform", "rotate(-90)")
+            //     .attr("y", 6)
+            //     .attr("dy", "0.71em")
+            //     .attr("text-anchor", "end")
+            //     .text("Value");
+
+            // g.selectAll(".bar")
+            //     .data(this.store.points)
+            //     .enter().append("rect")
+            //     .attr("class", "bar")
+            //     .attr("x", d => xScale(d.posX))
+            //     .attr("y", d => yScale(d.posY))
+            //     .attr("width", x.bandwidth())
+            //     .attr("height", d => height - y(d.posY));
+            //-----------------------
         },
+
         initLegend() {
             let legendContainer = d3.select('#scatter-legend-svg')
 
