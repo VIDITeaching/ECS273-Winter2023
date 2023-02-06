@@ -48,7 +48,6 @@ export default {
         }
     },
     created() {
-        console.log('create');
         axios.post(`${server}/fetchTinyRent2`)
             .then(resp => {
                 // console.log(resp.data);
@@ -83,7 +82,6 @@ export default {
             let zScale = d3.scaleLinear()
             .range([1, 16])
             .domain(zExtents);
-            console.log(zScale);
 
             const xAxis = chartContainer.append('g')
             .attr('transform', `translate(0, ${this.size.height - this.margin.bottom})`)
@@ -131,9 +129,7 @@ export default {
                 let bedsB = Number(b.split(':')[1].trim());
                 return bedsB - bedsA;
             });
-            console.log('labels: ', clusterLabels);
             clusterLabels = Array.from(new Set(clusterLabels));
-            console.log('labels: ', clusterLabels);
 
             let colorScale = d3.scaleOrdinal().domain(clusterLabels).range(this.colors)
 

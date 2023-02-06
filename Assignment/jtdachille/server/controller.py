@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 from sklearn.datasets import load_wine
 from resources.hd_processing_template import perform_PCA, perform_TSNE
-import requests
-import io
+# import requests
+# import io
 #from resources.network_process_template import contsruct_networkx
 #from resources.text_processing_template import preprocess
 from resources.time_processing_template import prepare_time_template_data, apply_arima, apply_sarima, prepare_rent_data
@@ -32,12 +32,12 @@ def remove_tabs(x):
     else:
         return x
         
-def processRent():
-    url = 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-07-05/rent.csv'
-    download = requests.get(url).content
-    rent = pd.read_csv(io.StringIO(download.decode('utf-8')), parse_dates=["date"], date_parser=lambda x: pd.to_datetime(x, format="%Y%m%d"))
-    rent_cropped = rent.head(100)
-    return rent.to_dict()
+# def processRent():
+#     url = 'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-07-05/rent.csv'
+#     download = requests.get(url).content
+#     rent = pd.read_csv(io.StringIO(download.decode('utf-8')), parse_dates=["date"], date_parser=lambda x: pd.to_datetime(x, format="%Y%m%d"))
+#     rent_cropped = rent.head(100)
+#     return rent.to_dict()
 
 def processTinyRent():
     if False:
