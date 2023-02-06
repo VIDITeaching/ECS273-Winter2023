@@ -1,0 +1,3 @@
+[submodule "Assignment/jtdachille/tidytuesday"]
+	path = Assignment/jtdachille/tidytuesday
+	url = https://github.com/rfordatascience/tidytuesday/
