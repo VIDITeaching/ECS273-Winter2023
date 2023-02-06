@@ -13,12 +13,19 @@
   "dependencies": {
     "@vueuse/core": "^9.9.0",
     "axios": "^1.2.1",
+    "bootstrap": "^5.2.3",
+    "bootstrap-vue": "^2.23.1",
+    "chart.js": "^4.2.0",
     "concurrently": "^7.6.0",
     "d3": "^7.8.0",
+    "d3-cloud": "^1.2.5",
     "lodash": "^4.17.21",
     "pinia": "^2.0.28",
     "vite-plugin-vuetify": "^1.0.1",
-    "vue": "^3.2.45",
+    "vue": "^3.2.47",
+    "vue-chartjs": "^5.2.0",
+    "vue-d3-cloud": "^0.2.0",
+    "vue-wordcloud": "^1.1.1",
     "vuetify": "^3.0.6"
   },
   "devDependencies": {
