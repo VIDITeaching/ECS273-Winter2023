@@ -79,3 +79,4 @@ Inside each file you will find more comments on explaining the code/logic.
   * `ExampleWithLegend.vue` - Built upon the above component, but added a legend. 
   * `ExampleWithInteractions.vue` - Built upon the above component, that implements a dropdown menu, communicates with the server on demand, and uses a store along with Composition API. Note that you're not required to do stores or Composition API for the assignment or the final project.
   * `Notes.vue` - showcases how to use Vuetify UI components. This also includes the local state, the state read from the store, and the prop passed down from its parent component.
+  
