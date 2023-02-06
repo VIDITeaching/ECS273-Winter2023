@@ -4,9 +4,7 @@ import Example from "./components/Example.vue";
 import ExampleWithLegend from "./components/ExampleWithLegend.vue";
 import ExampleWithInteractions from "./components/ExampleWithInteractions.vue";
 import USElection from "./components/USElection.vue";
-import WordCloud from "./components/WordCloud.vue";
 import Piechart from "./components/USElection_Piechart.vue";
-import Barchart from "./components/USElection_Barchart.vue";
 
 export default {
  components: {
@@ -14,9 +12,7 @@ export default {
   Example,
   ExampleWithLegend,
   ExampleWithInteractions,
-  Barchart,
   USElection,
-  WordCloud,
   Piechart
  },
 };
