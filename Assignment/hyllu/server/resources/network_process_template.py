@@ -16,8 +16,8 @@ def _prepare_toy_data() -> tuple[list[int], list[tuple]]:
     return nodes, edges
 
 def contsruct_networkx(nodes: list[int], edges: list[tuple]):
-    if not nodes or not edges: 
-        nodes, edges = _prepare_toy_data()
+    # if not nodes or not edges: 
+    #     nodes, edges = _prepare_toy_data()
     # construct a network using networkx and the predefined nodes and edges.
     G = nx.Graph()
     G.add_nodes_from(nodes)
@@ -38,7 +38,7 @@ def force_layout(G):
     position = []
     for i in pos.keys():
         tmp = {"id": int(i), "x": pos[i][0], "y": pos[i][1]}
-        position.append(tmp)
+        position.append([pos[i][0], pos[i][1]])
 
     return position
 

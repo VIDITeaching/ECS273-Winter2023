@@ -40,9 +40,6 @@ export default {
             // return (!isEmpty(this.points))  && this.size
             return (!isEmpty(this.coors))  && this.size
         },
-        rerender_network() {
-            return (!isEmpty(this.network_positions)) && this.size
-        }
     },
     created() {
         // axios.get(`${server}/fetchExample`)
@@ -75,7 +72,7 @@ export default {
         initChart_parallelset() {
             const chartThis = this;
 
-            let chartContainer = d3.select('#parallelset-svg')
+            let chartContainer = d3.select('#parallelset-svg');
             console.log(this.coors);
             console.log(this.nodes);
 
@@ -158,7 +155,7 @@ export default {
             this.selected_sets.forEach(element => {
                 this.selected_ids.push(this.link_set[element]);
             });
-            console.log(this.selected_ids);
+            // console.log(this.selected_ids);
 
             axios.post(`${server}/fetchTwitch`, {set:this.selected_sets, id:this.selected_ids})
                 .then(resp => {
@@ -166,7 +163,7 @@ export default {
                     this.network_nodes = resp.data.nodes;
                     this.network_links = resp.data.links;
                     this.network_positions = resp.data.positions;
-                    // console.log(resp.data);
+                    console.log(resp.data);
                     this.network_data = true;
                     this.drawChart_network();
                     return true;
@@ -177,7 +174,49 @@ export default {
             // console.log("data is here");
         },
         drawChart_network() {
+            d3.select('#network-svg').selectAll('*').remove()
+            const chartThis = this;
+
+            let chartContainer = d3.select('#network-svg')
             console.log(this.network_notes);
+
+            // prepare network data
+            const X = d3.map(this.network_positions, ([x]) => x);
+            const Y = d3.map(this.network_positions, ([,y]) => y);
+            const I = d3.range(X.length);
+            const linkDraw = d3.map(this.network_links, ([s, t]) => [s, t]);
+            const xDomain = d3.extent(X);
+            const yDomain = d3.extent(Y);
+            const xRange = [10, this.size.width * 0.8 - 10];
+            const yRange = [this.size.height - 10, 10];
+            const xScale = d3.scaleLinear(xDomain, xRange);
+            const yScale = d3.scaleLinear(yDomain, yRange);
+            
+            // draw network links
+            chartContainer.append('g')
+                .attr('stroke', "#ccc")
+                .attr('stroke-width', 0.7)
+                .attr('stroke-opacity', 0.7)
+                .selectAll('line')
+                .data(linkDraw)
+                .join('line')
+                .attr('x1', link => xScale(X[link[0]]))
+                .attr('x2', link => xScale(X[link[1]]))
+                .attr('y1', link => yScale(Y[link[0]]))
+                .attr('y2', link => yScale(Y[link[1]]));
+
+            // draw network nodes
+            chartContainer.append('g')
+                .attr('stroke', "#ccc")
+                .attr('stroke-width', 0.5)
+                .selectAll('circle')
+                .data(I)
+                .join('circle')
+                .attr('fill', "#99c")
+                .attr('cx', i => xScale(X[i]))
+                .attr('cy', i => yScale(Y[i]))
+                .attr('r', 2);
+
         },
         initLegend() {
             let legendContainer = d3.select('#scatter-legend-svg')
@@ -196,16 +235,6 @@ export default {
                 this.initChart_parallelset()
                 // this.initChart_network()
                 this.initLegend()
-            }
-        },
-        rerender_network(newSize) {
-            if (!isEmpty(newSize)) {
-                // d3.select('#scatter-svg').selectAll('*').remove()
-                d3.select('#network-svg').selectAll('*').remove()
-                // d3.select('#scatter-legend-svg').selectAll('*').remove()
-                // this.initChart_parallelset()
-                this.drawChart_network()
-                // this.initLegend()
             }
         },
     },
