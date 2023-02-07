@@ -175,6 +175,7 @@ export default {
                 // .attr('height', 10)
                 ;
 
+                
                 svg.append('rect')
                 .attr('width', this.citiesStore.size.width)
                 .attr('height', 50)
