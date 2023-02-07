@@ -22,10 +22,10 @@ export default {
 <template>
   <v-container id="main-container" class="d-flex flex-column flex-nowrap" fluid>
     <v-row no-gutters>
-      <v-col cols="5">
+      <v-col cols="6">
         <BeanVIS1/>
       </v-col>
-      <v-col cols="5">
+      <v-col cols="6">
         <BeanVIS2/>
       </v-col>
     </v-row>

@@ -56,10 +56,11 @@ def perform_CorrMat(X: np.ndarray, y:np.ndarray, taget_names:np.ndarray, num_bin
 
     for i in range(len(cov_mat)):
         for j in range(len(cov_mat[0])):
-            print(cov_mat[i][j])
+            # print(cov_mat[i][j])
             posX.append(cols[i])
             posY.append(cols[j])
             corr.append(cov_mat[i][j])
+            
             
     pos_all = np.vstack([posX,posY])
 

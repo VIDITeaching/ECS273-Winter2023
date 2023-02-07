@@ -1,10 +1,11 @@
 <script lang="ts">
 import * as d3 from "d3";
 import axios from 'axios';
-import { isEmpty, debounce } from 'lodash';
+import { isEmpty, debounce, range } from 'lodash';
 import { server } from '../helper';
 
 import { Point, PointMat, ComponentSize, Margin } from '../types';
+import { fcumsum } from "d3";
 // A "extends" B means A inherits the properties and methods from B.
 interface ScatterPoint extends Point{ 
     cluster: string;
@@ -22,9 +23,9 @@ export default {
         // Here we define the local states of this component. If you think the component as a class, then these are like its private variables.
         return {
             points: [] as HeatMapPoint[], // "as <Type>" is a TypeScript expression to indicate what data structures this variable is supposed to store.
-            corr: [] as number[],
+            clusters: [] as number[],
             size: { width: 0, height: 0 } as ComponentSize,
-            margin: {left: 20, right: 20, top: 20, bottom: 40} as Margin,
+            margin: {left: 20, right: 20, top: 20, bottom: 80} as Margin,
         }
     },
     computed: {
@@ -39,7 +40,7 @@ export default {
         axios.get(`${server}/fetchCorrMat`)
             .then(resp => { // check out the app.py in ./server/ to see the format
                 this.points = resp.data.data; 
-                this.corr = resp.data.clusters;
+                this.clusters = resp.data.clusters;
                 return true;
             })
             .catch(error => console.log(error));
@@ -55,7 +56,7 @@ export default {
             const margin = { top: 80, 
                                 right: this.margin.right, 
                                 bottom: this.margin.bottom, 
-                                left: this.margin.left +30},
+                                left: this.margin.left + 60},
                                 width = 450 - margin.left - margin.right,
                                 height = 450 - margin.top - margin.bottom;
                                 //width = this.size.width - this.margin.left,
@@ -69,111 +70,136 @@ export default {
                 .append("g")
                 .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-            //Read the data
-            d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/heatmap_data.csv").then(function (data) {
 
-                // Labels of row and columns -> unique identifier of the column called 'group' and 'variable'
-                const myGroups = Array.from(new Set(data.map(d => d.group))) as string[]
-                const myVars = Array.from(new Set(data.map(d => d.variable))) as string[]
+            // Labels of row and columns -> unique identifier of the column called 'group' and 'variable'
+            const myGroups = Array.from(new Set(this.points.map(d => d.posX))) as string[]
+            const myVars = Array.from(new Set(this.points.map(d => d.posY))) as string[]
 
-                // Build X scales and axis:
-                const x = d3.scaleBand()
-                    .range([0, width])
-                    .domain(myGroups)
-                    .padding(0.05);
-                svg.append("g")
-                    .style("font-size", 15)
-                    .attr("transform", `translate(0, ${height})`)
-                    .call(d3.axisBottom(x).tickSize(0))
-                    .select(".domain").remove()
+            // Build X scales and axis:
+            const x = d3.scaleBand()
+                .range([0, width])
+                .domain(myGroups)
+                .padding(0.05);
+            svg.append("g")
+                .style("font-size", 10)
+                .attr("transform", `translate(0, ${height})`)
+                .call(d3.axisBottom(x).tickSize(0))
+                .selectAll("text")
+                .attr("transform", "translate(-10,40)rotate(-90)")
+                .select(".domain").remove()
 
-                // Build Y scales and axis:
-                const y = d3.scaleBand()
-                    .range([height, 0])
-                    .domain(myVars)
-                    .padding(0.05);
-                svg.append("g")
-                    .style("font-size", 15)
-                    .call(d3.axisLeft(y).tickSize(0))
-                    .select(".domain").remove()
+            // Build Y scales and axis:
+            const y = d3.scaleBand()
+                .range([height, 0])
+                .domain(myVars)
+                .padding(0.05);
+            svg.append("g")
+                .style("font-size", 10)
+                .call(d3.axisLeft(y).tickSize(0))
+                .select(".domain").remove()
+            
 
-                // Build color scale
-                const myColor = d3.scaleSequential()
-                    .interpolator(d3.interpolateInferno)
-                    .domain([1, 100])
+            // Build color scale
+            const myColor = d3.scaleSequential()
+                .interpolator(d3.interpolateInferno)
+                .domain([-1, 1])
 
-                // create a tooltip
-                const tooltip = d3.select("#scatter-bean2-svg")
-                    .append("div")
-                    .style("opacity", 0)
-                    .attr("class", "tooltip")
-                    .style("background-color", "white")
-                    .style("border", "solid")
-                    .style("border-width", "2px")
-                    .style("border-radius", "5px")
-                    .style("padding", "5px")
+            // create a tooltip
+            var div = d3.select("body").append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0.5);
 
-                // Three function that change the tooltip when user hover / move / leave a cell
-                const mouseover = function (this:any, event:any,d:any) {
-                    tooltip
-                        .style("opacity", 1),
-                        d3.select(this)
+
+            // Three function that change the tooltip when user hover / move / leave a cell
+            const mouseover = function (this: any, event: any, d: any) {
+                div
+                    .style("opacity", 0.5),
+                    d3.select(this)
                         .style("stroke", "black")
                         .style("opacity", 1)
-                }
-                const mousemove = function (this:any, event:any, d:any) {
-                    tooltip
-                        .html("The exact value of<br>this cell is: " + d.value)
-                        .style("left", (event.pageX) + "px")
-                        .style("top", (event.pageY) + "px");
-                        console.log(event)
-                        console.log(d)
-                }
-                const mouseleave = function (this:any, event:any, d:any) {
-                    tooltip
-                        .style("opacity", 0)
-                    d3.select(this)
-                        .style("stroke", "none")
-                        .style("opacity", 0.8)
-                }
+            }
+            // function mousmove_fcn (this:any, event:MouseEvent, d:HeatMapPoint) {
+            //     tooltip
+            //         .html("The exact value of<br>this cell is: " + d.corr)
+            //         .style("left", (event.x) / 2 + "px")
+            //         .style("top", (event.y) / 2 + "px")
+            //     console.log(this)
+            // }
+            // const mousemove = mousmove_fcn.bind(d3)
 
-                // add the squares
-                svg.selectAll()
-                    .data(data, function (d:any) { return d.group + ':' + d.variable; })
-                    .join("rect")
-                    .attr("x", d => x(d.group) as number)
-                    .attr("y", d => y(d.variable) as number)
-                    .attr("rx", 4)
-                    .attr("ry", 4)
-                    .attr("width", x.bandwidth())
-                    .attr("height", y.bandwidth())
-                    .style("fill", function (d) { return myColor(d.value) })
-                    .style("stroke-width", 4)
+            // var div = d3.select("#scatter-bean2-svg").append("div")
+            //     .attr("class", "tooltip")
+            //     .style("opacity", 0);
+
+            const mousemove = function (this:any, event:MouseEvent, d:HeatMapPoint) {
+                div.transition()
+                    .style("opacity", 1.0);
+                div
+                .style("left", (event.pageX) + "px")
+                .style("top", (event.pageY - 25) + "px")
+                .html("<span style='color:white'>" + d.corr.toFixed(2) + "</span><br>")
+                
+                // .style("left", (event.x) + "px")
+                // .style("top", (event.y-20) + "px")
+                
+                //.html("The exact value of<br>this cell is: " + d.corr)
+            }
+    //                 div.transition()
+    //     .duration(100)
+    //     .style("opacity", 0.8);
+    //   div.html("<span class='year'>" + d.year + " - " + month[d.month - 1] + "</span><br>" +
+    //       "<span class='temperature'>" + (Math.floor((d.variance + baseTemp) * 1000) / 1000) + " &#8451" + "</span><br>" +
+    //       "<span class='variance'>" + d.variance + " &#8451" + "</span>")
+    //     .style("left", (d3.event.pageX - ($('.tooltip').width()/2)) + "px")
+    //     .style("top", (d3.event.pageY - 75) + "px");
+            
+            
+            const mouseleave = function (this: any, event: any, d: any) {
+                div
+                    .style("opacity", 0)
+                d3.select(this)
                     .style("stroke", "none")
                     .style("opacity", 0.8)
-                    .on("mouseover", mouseover)
-                    .on("mousemove", mousemove)
-                    .on("mouseleave", mouseleave)
-            })
+            }
+
+            // add the squares
+            svg.selectAll()
+                .data(this.points, function (d: any) { return d.posX + ':' + d.posY; })
+                .join("rect")
+                .attr("x", d => x(d.posX) as number)
+                .attr("y", d => y(d.posY) as number)
+                .attr("rx", 4)
+                .attr("ry", 4)
+                .attr("width", x.bandwidth())
+                .attr("height", y.bandwidth())
+                .style("fill", function (d) { return myColor(d.corr) })
+                .style("stroke-width", 4)
+                .style("stroke", "none")
+                .style("opacity", 0.8)
+                .on("mousemove", mousemove)
+                .on("mouseleave", mouseleave)
+                .on("mouseover", mouseover) 
+                
+                //.on("mousemove", mousemove)
 
             // Add title to graph
             svg.append("text")
                 .attr("x", 0)
                 .attr("y", -50)
                 .attr("text-anchor", "left")
-                .style("font-size", "22px")
-                .text("Covariance matrix and heat map of bean traits");
+                .style("font-size", "15px")
+                .text("Correlation matrix heat map of bean traits");
 
             // Add subtitle to graph
             svg.append("text")
                 .attr("x", 0)
                 .attr("y", -20)
                 .attr("text-anchor", "left")
-                .style("font-size", "14px")
+                .style("font-size", "10px")
                 .style("fill", "grey")
                 .style("max-width", 400)
                 .text("The brighter the color, the higher the correlation.");
-
+                          
 
 
             /////////////////////////////////////////////
@@ -251,12 +277,60 @@ export default {
             ///////////////////////////////////////////
 
         },
+
+        initLegend() {
+            let legendContainer = d3.select('#heatmap-legend-svg')
+
+            //let clusterLabels: string[] = this.store.clusters.map((cluster: string, idx: number) => `Cultivar ${idx+1}`)
+            let clusterLabels: number[] = [-1.0, -0.7, -0.3, 0, 0.3, 0.7, 1.0]
+
+            const myColor = d3.scaleSequential()
+                .interpolator(d3.interpolateInferno)
+                .domain([-1, 1])
+            let colorScale = myColor
+
+            const rectSize = 12;
+            const titleHeight = 20;
+
+            const legendGroups = legendContainer.append('g')
+                .attr('transform', `translate(0, ${titleHeight})`)
+                .selectAll('g')
+                .data<number>(clusterLabels)
+                .join((enter) => {
+                    let select = enter.append('g');
+
+                    select.append('rect')
+                        .attr('width', rectSize).attr('height', rectSize)
+                        .attr('x', 5).attr('y', (d: number, idx: number) => idx * rectSize * 1.5)
+                        .style('fill', (d: number) => myColor(d) as string)
+
+                    select.append('text')
+                        .text((d: number) => d)
+                        .style('font-size', '.7rem')
+                        .style('text-anchor', 'start')
+                        .attr('x', rectSize)
+                        .attr('y', (d: number, idx: number) => idx * rectSize * 1.5)
+                        .attr('dx', '0.7rem')
+                        .attr('dy', '0.7rem')
+                    return select
+                })
+
+            const title = legendContainer
+                .append('text')
+                .style('font-size', '.7rem')
+                .style('text-anchor', 'start')
+                .style('font-weight', 'bold')
+                .text('Correlations')
+                .attr('x', 5)
+                .attr('dy', '0.7rem')
+        },
     },
     watch: {
         rerender(newSize) {
             if (!isEmpty(newSize)) {
                 d3.select('#scatter-bean2-svg').selectAll('*').remove() // Clean all the elements in the chart
                 this.initChart()
+                this.initLegend()
             }
         }
     },
@@ -278,11 +352,21 @@ export default {
         <svg id="scatter-bean2-svg" width="100%" height="100%">
             <!-- all the visual elements we create in initChart() will be inserted here in DOM-->
         </svg>
+        <svg id="heatmap-legend-svg" width="50%" height="80%">
+        </svg>
     </div>
+
+    <div id="scatter-control-container2" class="d-flex">
+        </div>
+    
 </template>
 
 <style scoped>
 .chart-container{
     height: 100%;
+}
+#scatter-control-container2{
+    width: 6rem;
+    flex-direction: column;
 }
 </style>

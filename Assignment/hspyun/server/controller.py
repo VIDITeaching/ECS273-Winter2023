@@ -38,9 +38,9 @@ def processBeanCorrMat(csv_path = "../server/data/Dry_Bean_Dataset.csv",
     # Corr mat
     
     X_feature = df.drop(columns='Class').values
-    arr, new_y = perform_CorrMat(X_feature,y,target_names)
+    arr, corr = perform_CorrMat(X_feature,y,target_names)
     points = pd.DataFrame(arr.T, columns=['posX','posY'])
-    points['cluster'] = new_y
+    points['corr'] = corr
 
     # How to JSON serialize pandas dataframes and numpy arrays
     return points.to_dict(orient='records'), list(target_names)
