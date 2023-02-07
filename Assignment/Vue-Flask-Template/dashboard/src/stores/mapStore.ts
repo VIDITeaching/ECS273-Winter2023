@@ -11,7 +11,6 @@ export const useMapStore = defineStore('mapStore', {
         async fetchMap() { // same API request but in slightly different syntax when it's declared as a method in a component or an action in the store.
             axios.get(`${server}/fetchMap`)
                 .then(resp => {
-                    console.log('map: ', resp.data)
                     // console.log('resp.city: ', resp.data)
                     this.map = resp.data;
                     return true;
