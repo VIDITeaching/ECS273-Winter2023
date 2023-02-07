@@ -77,7 +77,8 @@ export default {
                 .style('background', 'rgba(0,0,0,0.6)')
                 .style('border-radius', '4px')
                 .style('color', '#fff')
-                .text('a simple tooltip');
+                .text('');
+                
             if (!this.citiesData.cities) return false
             if (!this.mapStore.map.objects) return false
             let cityData = JSON.parse(JSON.stringify(this.citiesStore.citiesData))
@@ -142,7 +143,7 @@ export default {
                 .scaleExtent([1, 8])
                 // .translateExtent([[-500, -300], [1500, 1000]])
                 .on("zoom", e => {
-                    zoomed(e, this.citiesStore.size.width, this.citiesStore.size.height)
+                    zoomed(e, this.yearStore.year)
                 }
                 );
             // The svg
@@ -185,10 +186,10 @@ export default {
                 .attr("text-anchor", "end")
                 .attr("font-size", "24px")
                 .attr("font-weight", "bold")
-                .attr("x", (this.citiesStore.size.width + this.citiesStore.margin.left) / 2)
+                .attr("x", (this.citiesStore.size.width + this.citiesStore.margin.left + 125) / 2)
                 
                 .attr("y",-25)
-                .text("Housing Production by City");
+                .text("Housing Production by City - Bay Area");
 
                 
             const center = [122.4194, 37.7749];  // longitude and latitude of Bay Area center
@@ -333,7 +334,7 @@ export default {
             let startYear = 1990;
             let endYear = 2018;
             let currentYear = startYear;
-            console.log('currentYear: ', currentYear)
+            // console.log('currentYear: ', currentYear)
             let productionData = markers.filter(d => parseInt(d.year) === parseInt(currentYear)).map(d => {
                 return {
                     long: d.long,
@@ -462,11 +463,11 @@ export default {
             // Add a rectangle with a background color for the legend
             let legendRect = legend.append('rect')
                 .attr('width', legendWidth)
-                .attr('height', legendHeight)
+                .attr('height', 100)
                 .style('fill', 'white')
                 .style('stroke', 'black')
                 .style('opacity', 0.8)
-                .attr('transform', `translate(${-this.citiesStore.margin.left + 50}, 75)`);
+                .attr('transform', `translate(${-this.citiesStore.margin.left + 50}, 175)`);
 
             //   .attr('transform', `translate(${10}, ${this.citiesStore.size.height - legendHeight - 10})`);
             let legendRadius = d3.scaleSqrt([0, d3.max(JSON.parse(JSON.stringify(this.citiesStore.citiesData.cities)), d => {
@@ -545,6 +546,30 @@ export default {
                 .attr("y",-25)
                 .text("Number of Units Built");
 
+            
+            let yearText1 = legend.append("text")
+                .attr("text-anchor", "end")
+                .attr("font-size", "18px")
+                .attr("font-weight", "bold")
+                .attr("x", 0)
+                
+                .attr('transform', `translate(${70}, 170)`)
+                // .attr("y",-500)
+                .text(`Year: ${this.yearStore.year}`);
+
+            
+                let yearText2 = legend.append("text")
+                .attr("text-anchor", "end")
+                .attr("font-size", "18px")
+                .attr("font-weight", "bold")
+                .attr('fill', 'grey')
+                .attr("x", 0)
+                
+                .attr('transform', `translate(${70}, 170)`)
+                // .attr("y",-500)
+                .text(`${this.yearStore.year}`);
+
+
             svg.call(zoom);
             function reset(states, width, height) {
                 if (typeof states !== 'Object') {
@@ -572,13 +597,13 @@ export default {
                     d3.pointer(event, svg.node())
                 );
             }
-            function zoomed(event) {
+            function zoomed(event, year) {
                 const { transform } = event;
                 g.attr("transform", transform);
                 g.attr("stroke-width", 1 / transform.k);
 
                 bubbles.attr('r', d => {
-                    if (parseInt(d.year) === this.yearStore.year) {
+                    if (parseInt(d.year) === year) {
                         if (d.r > 0) {
                             return d.r / transform.k
                         }
@@ -615,6 +640,7 @@ export default {
         },
         'yearStore.year'(data) { // when data changes
             // if (!isEmpty(data)) {
+                // console.log('year changed: ', data)
             this.rerender()
             // }
         },

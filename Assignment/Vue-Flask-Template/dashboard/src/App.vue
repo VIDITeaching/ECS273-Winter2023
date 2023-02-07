@@ -39,7 +39,7 @@ export default {
         <ParallelCoords/>
       </v-col> -->
       <v-col cols="5">
-        <StackedChart/>
+        <StackedChart id="stack"/>
       </v-col>
 
 <!-- 

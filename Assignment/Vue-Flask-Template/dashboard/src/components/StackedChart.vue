@@ -3,7 +3,7 @@
     <!-- <div class="outer" ref="parallelContainer">
             <div class="inner"><svg id="stacked-svg"></svg></div>
         </div> -->
-    <div ref="parallelContainer" class="chart-container outer d-flex">
+    <div id = "stackedcontainer" ref="parallelContainer" class="chart-container outer d-flex">
 
         <svg id="stacked-svg" class="inner"></svg>
     </div>
@@ -20,7 +20,7 @@ import { isEmpty, debounce } from 'lodash';
 import { server } from '../helper';
 import { getColors } from '../helpers/colors';
 
-import { setEndYear, setStartYear, setCurrentYear, getCurrentYear, getStackedCurrentYear, getStackedStartYear, getStackedEndYear, setStackedCurrentYear, setStackedEndYear, setStackedStartYear } from "../helpers/animate";
+// import { setEndYear, setStartYear, setCurrentYear, getCurrentYear, getStackedCurrentYear, getStackedStartYear, getStackedEndYear, setStackedCurrentYear, setStackedEndYear, setStackedStartYear } from "../helpers/animate";
 interface DataPoint {
     year: number;
     [key: string]: number;
@@ -32,6 +32,8 @@ export default {
         const { resize } = storeToRefs(store);
 
         const yearStore = useYearStore();
+
+
         return {
             store,
             resize,
@@ -60,10 +62,10 @@ export default {
         initChart() {
             let svg = d3.select('#stacked-svg')
 
-                .attr('width', this.store.size.width + this.store.margin.left + this.store.margin.right + 150)
+                .attr('width', this.store.size.width + this.store.margin.left + this.store.margin.right + 50)
                 .attr('height', this.store.size.height + this.store.margin.top + this.store.margin.bottom)
                 .append("g")
-                .attr("transform", `translate(${this.store.margin.left}, ${-this.store.margin.bottom})`);
+                .attr("transform", `translate(${this.store.margin.right}, ${-this.store.margin.bottom})`);
 
             let data: any[] = d3.csvParse(this.store.housing);
 
@@ -164,24 +166,12 @@ export default {
                 })(data)
 
 
-            // Add a clipPath: everything out of this area won't be drawn.
-            // const clip = svg.append("defs").append("svg:clipPath")
-            //     .attr("id", "clip")
-            //     .append("svg:rect")
-            //     .attr("width", this.store.size.width)
-            //     .attr("height", this.store.size.height)
-            //     .attr("x", 0)
-            //     .attr("y", 0);
-
-
-
-            
-
 
 
 
             const areaChart = svg
                 .append('g')
+                .attr('id', "myAreaChart")
 
                 .attr("clip-path", "url(#clip)")
 
@@ -198,7 +188,7 @@ export default {
 
             areaChart
                 .selectAll("mylayers")
-
+                
                 .data(stackedData)
                 .join("path")
                 .attr("class", function (d) {
@@ -284,7 +274,7 @@ export default {
                 .attr("id", function (d) {
                     return d.replaceAll(' ', '')
                 })
-                .text(function (d) { return d })
+                .text(function (d) { return d.replaceAll(' County', '') })
                 .attr("text-anchor", "left")
                 .style("alignment-baseline", "middle")
                 .on("mouseover", function (event, d) {
@@ -529,8 +519,22 @@ const clip = svg.append("defs").append("svg:clipPath")
                 .style("display", "none");
 
 
+                let isDragging = false;
 
-                svg.on("mousemove", function (event) {
+
+                svg
+            .on("mouseleave", function () {
+                bisectorRect.attr("x", -100).attr('opacity', 0)
+            })
+            .on("mousedown", () => {
+                    isDragging = true;
+                })
+                .on("mousemove", (e) => {
+                    if (isDragging) {
+                    clickYear(e, this.yearStore);
+                    bisectorRect.attr("opacity", 0)
+                    }
+                    else {
                     if (event.srcElement.id !== 'backgroundRect' && event.srcElement.id !== 'selected') {
                         return;
                     }
@@ -544,13 +548,20 @@ const clip = svg.append("defs").append("svg:clipPath")
                     .invert(mouseX);
 
                 bisectorRect.attr("x", x(Math.round(year)))
-                .attr('opacity', .5)
-            })
-            .on("mouseleave", function () {
-                bisectorRect.attr("x", -100).attr('opacity', 0)
-            })
-            .on("click", (e) => clickYear(e, this.yearStore))
+                .attr('opacity', .5)}
+                    
+                })
+                .on("mouseup", () => {
+                    isDragging = false;
 
+                    bisectorRect.attr("opacity", .5)
+                })
+                .on("click", (e) => {
+                    clickYear(e, this.yearStore);
+                    
+                });
+
+            
             const clickYear = function(event, yearStore) {
                 
                 if (event.srcElement.id !== 'backgroundRect' && event.srcElement.id !== 'selected') {
@@ -570,13 +581,40 @@ const clip = svg.append("defs").append("svg:clipPath")
 
                 
                 yearStore.setYear((Math.round(year)));
-                console.log('getCurrentYear: ', getCurrentYear())
+                // console.log('getCurrentYear: ', getCurrentYear())
                 
             }
 
+            const clickYearDrag = function(event, yearStore) {
+                console.log('drag: ', event)
+                if (event.srcElement.id !== 'backgroundRect' && event.srcElement.id !== 'selected') {
+                        return;
+                    }
+                    const mouseX = d3.pointer(event, event.target)[0];
+                let year = x.invert(mouseX);
+                year = d3.scaleLinear()
+                    .domain(x.domain())
+                    .range(x.range())
+                    .clamp(true)
+                    .nice()
+                    .invert(mouseX);
+
+                    bisectorSelect.attr("x", x(Math.round(year)))
+                .attr('opacity', 1)
+
+                
+                yearStore.setYear((Math.round(year)));
+                // console.log('getCurrentYear: ', getCurrentYear())
+                
+            }
+
+            let year = 1990;
+            if (this.yearStore.year) {
+                year = this.yearStore.year;
+            }
             const bisectorSelect = svg.append("rect")
                 .attr("id", "bisectorSelect")
-                .attr("x", x(getStackedStartYear()))
+                .attr("x", x(year))
                 .attr("y", 0)
                 .attr("width", 4)
                 .attr("height", this.store.size.height - this.store.margin.top)
@@ -592,7 +630,7 @@ const clip = svg.append("defs").append("svg:clipPath")
 
             const bisectorRect = svg.append("rect")
                 .attr("id", "bisectorRect")
-                .attr("x", x(getStackedStartYear()))
+                .attr("x", x(this.yearStore.year))
                 .attr("y", 0)
                 .attr("width", 4)
                 .attr("height", this.store.size.height - this.store.margin.top)
