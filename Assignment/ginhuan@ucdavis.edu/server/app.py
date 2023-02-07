@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
-from controller import processExample, read_CSVfile
+from controller import read_CSVfile
 import csv
 import re
 
@@ -11,20 +11,6 @@ CORS(app)
 @cross_origin()
 def hello_world():
     return "<p>Hello, World!</p>"
-
-@app.route("/fetchExample", methods=["GET", "POST"])
-@cross_origin()
-def fetchExample():
-    if request.method == "GET": # handling GET request
-        points, cluster_names = processExample()
-        resp = jsonify(data=points, clusters=cluster_names)
-        return resp
-    else: # handling POST request, which is only effective when ExampleWithInteractions.vue is loaded
-        request_context = request.get_json() # JSON object
-        method = request_context['method']
-        points, cluster_names = processExample(method)
-        resp = jsonify(data=points, clusters=cluster_names)
-        return resp
 
 @app.route('/presidentName')
 def get_barchart_data():

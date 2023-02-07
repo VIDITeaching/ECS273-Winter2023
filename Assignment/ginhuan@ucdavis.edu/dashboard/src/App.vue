@@ -1,17 +1,9 @@
 <script lang="ts">
-import Notes from "./components/Notes.vue";
-import Example from "./components/Example.vue";
-import ExampleWithLegend from "./components/ExampleWithLegend.vue";
-import ExampleWithInteractions from "./components/ExampleWithInteractions.vue";
 import USElection from "./components/USElection.vue";
 import Piechart from "./components/USElection_Piechart.vue";
 
 export default {
  components: {
-  Notes,
-  Example,
-  ExampleWithLegend,
-  ExampleWithInteractions,
   USElection,
   Piechart
  },
@@ -34,11 +26,6 @@ export default {
    <!-- <v-col>
     <Barchart/>
    </v-col> -->
-  </v-row>
-  <v-row no-gutters>
-   <v-col>
-    <Notes msg="This message is showcasing how to pass down the props" />
-   </v-col>
   </v-row>
  </v-container>
 </template>
