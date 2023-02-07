@@ -18,13 +18,8 @@ export default {
 <template>
   <v-container id="main-container" class="d-flex flex-column flex-nowrap" fluid>
     <v-row no-gutters>
-      <v-col cols="5">
-        <ExampleWithLegend/>
-      </v-col>
-    </v-row>
-    <v-row no-gutters>
       <v-col>
-        <Notes msg="This message is showcasing how to pass down the props"/>
+        <ExampleWithInteractions/>
       </v-col>
     </v-row>
   </v-container>
