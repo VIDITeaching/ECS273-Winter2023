@@ -1,9 +1,8 @@
 <script lang="ts">
 import * as d3 from "d3";
 import { debounce, isEmpty } from 'lodash';
-import axios from 'axios';
 import { Point } from '../types';
-interface ScatterPoint extends Point {
+interface ScatterPoint extends Point{
     cluster: string;
 }
 
@@ -14,15 +13,10 @@ interface ScatterPoint extends Point {
 */
 
 // For importing a store. See how it's set up in ./dashboard/stores/ and ./dashboard/main.ts
-import { mapState, storeToRefs } from 'pinia';
+import { mapState, storeToRefs } from 'pinia'; 
 import { useExampleStore } from '../stores/exampleStore';
 
 export default {
-    data() {
-        return {
-            int_para: 20 as number
-        }
-    },
     setup() { // Composition API syntax
         const store = useExampleStore()
         // Alternative expression from computed
@@ -36,15 +30,9 @@ export default {
         ...mapState(useExampleStore, ['selectedMethod']) // Traditional way to map the store state to the local state
     },
     created() {
-        this.store.fetchExample('20');
+        this.store.fetchExample(this.selectedMethod);
     },
     methods: {
-        buttonClick() {
-            this.store.fetchExample(this.int_para.toString());
-            console.log('Input is ' + this.int_para);
-            this.initChart()
-            this.initLegend()
-        },
         onResize() {
             let target = this.$refs.scatterContainer as HTMLElement
             if (target === undefined || target === null) return;
@@ -83,12 +71,12 @@ export default {
                 .attr('dy', '0.5rem')
                 .style('text-anchor', 'middle')
                 .style('font-weight', 'bold')
-                .text(`Dry Beans Dataset ${this.selectedMethod} Projection`)
+                .text(`Wine Dataset ${this.selectedMethod} Projection`)
         },
         initLegend() {
             let legendContainer = d3.select('#scatter-legend-svg')
 
-            let clusterLabels: string[] = this.store.clusters.map((cluster: string, idx: number) => `Cultivar ${idx + 1}`)
+            let clusterLabels: string[] = this.store.clusters.map((cluster: string, idx: number) => `Cultivar ${idx+1}`)
             let colorScale = d3.scaleOrdinal().domain(clusterLabels).range(d3.schemeTableau10)
 
             const rectSize = 12;
@@ -132,7 +120,6 @@ export default {
             this.initChart()
             this.initLegend()
         }
-
     },
     watch: {
         resize(newSize) { // when window resizes
@@ -145,13 +132,16 @@ export default {
                 this.rerender()
             }
         },
+        selectedMethod(newMethod) { // function triggered when a different method is selected via dropdown menu
+            this.store.fetchExample(newMethod)
+        }
     },
     mounted() {
         window.addEventListener('resize', debounce(this.onResize, 100))
         this.onResize()
     },
     beforeDestroy() {
-        window.removeEventListener('resize', this.onResize)
+       window.removeEventListener('resize', this.onResize)
     }
 }
 </script>
@@ -162,17 +152,17 @@ export default {
     <div class="viz-container d-flex justify-end">
         <div class="chart-container d-flex" ref="scatterContainer">
             <svg id="scatter-svg" width="100%" height="100%">
-
             </svg>
         </div>
         <div id="scatter-control-container" class="d-flex">
             <div class="d-flex mb-4">
-                <label :style="{ fontSize: '0.7rem' }"> Type TSNE Process Perplexity:
-                    <input placeholder="HERE" v-model="int_para" />
-                    <button @click="buttonClick">Click Here</button>
+                <label :style="{ fontSize: '0.7rem'}"> Select DR method:
+                    <select class="method-select" v-model="store.selectedMethod">
+                        <option v-for="method in store.methods" :value="method" 
+                            :selected="(method === store.selectedMethod)? true : false">{{method}}</option>
+                    </select>
                 </label>
             </div>
-
             <svg id="scatter-legend-svg" width="100%" height="80%">
             </svg>
         </div>
@@ -181,19 +171,25 @@ export default {
 </template>
 
 <style scoped>
-.viz-container {
-    height: 100%;
+.viz-container{
+    height:100%;
     flex-direction: row;
     flex-wrap: nowrap;
 }
-
-.chart-container {
+.chart-container{
     height: 100%;
     width: calc(100% - 6rem);
 }
-
-#scatter-control-container {
+#scatter-control-container{
     width: 6rem;
     flex-direction: column;
+}
+.method-select{
+    outline: solid;
+    outline-width: 1px;
+    outline-color: lightgray;
+    border-radius: 2px;
+    width: 100%;
+    padding: 2px 5px;
 }
 </style>
