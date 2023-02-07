@@ -4,7 +4,6 @@ import Example from './components/Example.vue'
 import ExampleWithLegend from './components/ExampleWithLegend.vue';
 import ExampleWithInteractions from './components/ExampleWithInteractions.vue';
 import ParallelCoords from './components/ParallelCoords.vue';
-
 import Rent from './components/Rent.vue';
 import Sankey from './components/Sankey.vue';
 import Controls from './components/Controls.vue';
