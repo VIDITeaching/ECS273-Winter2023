@@ -96,7 +96,7 @@ export default {
                 .attr('dy', '0.5rem') // relative distance from the indicated coordinates.
                 .style('text-anchor', 'middle')
                 .style('font-weight', 'bold')
-                .text('7 Types Dry Bean Average Areas') // text content
+                .text('7 Types of Dry Bean\'s Average Area') // text content
         },
     },
     watch: {
