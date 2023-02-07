@@ -15,3 +15,12 @@ export interface Point {
     readonly posX: number;
     readonly posY: number;
 }
+
+export interface PointMat {
+    readonly posX: string;
+    readonly posY: string;
+}
+
+export interface Val {
+    readonly Val: number;
+}
