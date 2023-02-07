@@ -4,6 +4,7 @@ import { debounce, isEmpty } from 'lodash';
 import { Point } from '../types';
 import { mapState, storeToRefs } from 'pinia';
 import { useStore } from '../stores/store';
+import {extent} from "d3";
 interface ScatterPoint extends Point{
     cluster: string;
 }
@@ -46,6 +47,11 @@ export default {
             let clusters: string[] = this.store.clusters.map((cluster: string, idx: number) => String(idx))
             let colorScale = d3.scaleOrdinal().domain(clusters).range(d3.schemeTableau10) // d3.schemeTableau10: string[]
 
+             // Add brushing
+            let brush = d3.brush()  // Add the brush feature using the d3.brush function
+                .extent([[0,0], [this.store.size.width, this.store.size.height]]) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+                .on("end", updateChart) // Each time the brush selection changes, trigger the 'updateChart' function
+
             const points = chartContainer.append('g')
                 .selectAll('circle')
                 .data<ScatterPoint>(this.store.points)
@@ -54,7 +60,35 @@ export default {
                 .attr('cy', (d: ScatterPoint) => yScale(d.posY))
                 .attr('r', 5)
                 .style('fill', (d: ScatterPoint) => colorScale(String(d.cluster)) as string)
-                .style('opacity', .7)
+                .style('opacity', .7);
+            chartContainer.append("g")
+              .attr("class", "brush")
+              .call(brush);
+
+            // A function that set idleTimeOut to null
+          var idleTimeout
+          function idled() { idleTimeout = null; }
+
+          // A function that update the chart for given boundaries
+          function updateChart(event) {
+            const selection = event.selection;
+            // If no selection, back to initial coordinate. Otherwise, update X axis domain
+            if (selection === null) {
+              if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+              xScale.domain(xExtents)
+              yScale.domain(yExtents)
+            }else{
+              xScale.domain([xScale.invert(selection[0][0]), xScale.invert(selection[1][0])])
+              yScale.domain([yScale.invert(selection[0][1]), yScale.invert(selection[1][1])])
+              chartContainer.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
+            }
+
+            chartContainer
+                .selectAll("circle")
+                .transition().duration(1000)
+                .attr("cx", (d: ScatterPoint) => xScale(d.posX))
+                .attr("cy", (d: ScatterPoint) => yScale(d.posY))
+            }
 
             const title = chartContainer.append('g')
                 .append('text')
