@@ -2,12 +2,12 @@ import React from 'react';
 import * as d3 from 'd3';
 import '../App.css'
 import FetchStaticData from '../fetchData/FetchStaticData';
-const w=1000;
+const w=800;
 const h=500;
-const margin={top:50,
-      right:50,
-      bottom:50,
-      left:150
+const margin={top:30,
+      right:30,
+      bottom:30,
+      left:130
     }; 
 const BarChart=() => {
 
@@ -28,6 +28,9 @@ const BarChart=() => {
     .range([0,w-300]);
   
   return (
+    <>
+    <div>
+    <h3>Average rent Per County</h3>
     <svg 
       width={w}
       height={h}
@@ -81,7 +84,7 @@ const BarChart=() => {
         <text
           className="text-label"
           x={-220} 
-          y={h-620} 
+          y={h-600} 
           transform='rotate(-90)'>
             County
         </text>
@@ -99,6 +102,8 @@ const BarChart=() => {
         }
       </g>
     </svg>
+    </div>
+    </>
   );
 };
 export default BarChart

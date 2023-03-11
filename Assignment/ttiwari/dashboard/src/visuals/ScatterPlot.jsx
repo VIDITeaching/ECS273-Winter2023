@@ -14,13 +14,13 @@ const label={
     "sqft":"House Area in Square Ft"
 }
 
-const w=1200;
-const h=600;
+const w=600;
+const h=500;
 
 const margin={top:40,
       right:50,
       bottom:50,
-      left:100
+      left:80
     };
 
 const ScatterPlot=() => {
@@ -38,14 +38,15 @@ const ScatterPlot=() => {
 
   const yScale = d3.scaleLinear()
     .domain(d3.extent(data, d => d[yV]))
-    .range([40, h-150]);
+    .range([30, 370]);
 
   const xScale = d3.scaleLinear()
     .domain(d3.extent(data, d => d[xV]))
-    .range([80,w]);
+    .range([30,600]);
 
   return (
     <>
+    <h3>Interactive Visual</h3>
       <label for="x-select">X:</label>
 
       <Dropdown
@@ -115,7 +116,7 @@ const ScatterPlot=() => {
         <text className="text-label" x={w/2.4} y={h-55}>
           {label[xV]}
         </text>
-        <text className="text-label" x={-250} y={h-650} transform='rotate(-90)'>
+        <text className="text-label" x={-300} y={h-550} transform='rotate(-90)'>
         {label[yV]}
         </text>
         {

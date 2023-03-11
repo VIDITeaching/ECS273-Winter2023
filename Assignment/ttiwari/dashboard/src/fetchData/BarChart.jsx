@@ -2,10 +2,10 @@ import React, { useState,useEffect } from 'react';
 import * as d3 from 'd3';
 import '../App.css'
 const csvUrl ='https://gist.githubusercontent.com/tarun1219/b25c8e5c3c9ae0ebda170f34a5b5a8cb/raw/7a59b23f223340e4c1580f848d2bc61e62b4f7c2/avgrent.csv'
-const w=1000;
-const h=500;
+const w=200;
+const h=300;
 const margin={top:50,
-      right:50,
+      right:0,
       bottom:50,
       left:200
     };
